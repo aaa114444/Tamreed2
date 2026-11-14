@@ -1,0 +1,30 @@
+﻿# Environment variables and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# ASP.NET build output
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Frontend dependencies and build output
+**/node_modules/
+frontend/dist/
+
+# Local development settings
+**/appsettings.Development.json
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+**/appsettings.json
