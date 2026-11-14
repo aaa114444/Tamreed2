@@ -29,13 +29,21 @@ jobs:
         run: dotnet build src/Tamreed2.Api/Tamreed2.Api.csproj --configuration Release
 
       - name: Publish Tamreed2 API
-        run: dotnet publish src/Tamreed2.Api/Tamreed2.Api.csproj --configuration Release --no-build --output "${{ env.DOTNET_ROOT }}/myapp"
+        run: dotnet publish src/Tamreed2.Api/Tamreed2.Api.csproj --configuration Release --no-build --output ./publish
+
+      - name: Verify published files
+        run: |
+          echo "Published API files:"
+          ls -la ./publish
+          echo "Checking API runtime files..."
+          test -f ./publish/Tamreed2.Api.dll
+          test -f ./publish/Tamreed2.Api.runtimeconfig.json
 
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
           name: tamreed2-api
-          path: ${{ env.DOTNET_ROOT }}/myapp
+          path: ./publish/
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +58,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tamreed2-api
+          path: ./publish
+
+      - name: Verify deployment files
+        run: |
+          ls -la ./publish
+          test -f ./publish/Tamreed2.Api.dll
+          test -f ./publish/Tamreed2.Api.runtimeconfig.json
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -63,4 +78,4 @@ jobs:
         with:
           app-name: tamreed2-api-2026
           slot-name: Production
-          package: .
+          package: ./publish
