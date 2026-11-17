@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Domain.Users;
 
@@ -15,49 +15,55 @@ public sealed class UserRepository : IUserRepository
 
     public async Task<User?> GetByIdAsync(
         Guid userId,
- CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         return await _dbContext.Users
-     .AsNoTracking()
-     .FirstOrDefaultAsync(
-         user => user.Id == userId,
-         cancellationToken);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
+    }
+
+    public async Task<User?> GetByIdForUpdateAsync(
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
     }
 
     public async Task<User?> GetByEmailAsync(
- string email,
- CancellationToken cancellationToken)
+        string email,
+        CancellationToken cancellationToken)
     {
         return await _dbContext.Users
-     .AsNoTracking()
-     .FirstOrDefaultAsync(
-         user => user.Email == email.ToLowerInvariant(),
-         cancellationToken);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                user => user.Email == email.ToLowerInvariant(),
+                cancellationToken);
     }
 
     public async Task<IReadOnlyList<User>> GetAllAsync(
         CancellationToken cancellationToken)
     {
- return await _dbContext.Users
-     .AsNoTracking()
-     .OrderBy(user => user.Email)
-     .ToListAsync(cancellationToken);
+        return await _dbContext.Users
+            .AsNoTracking()
+            .OrderBy(user => user.Email)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(
         User user,
- CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         await _dbContext.Users.AddAsync(user, cancellationToken);
     }
 
     public async Task<bool> EmailExistsAsync(
- string email,
+        string email,
         CancellationToken cancellationToken)
     {
- return await _dbContext.Users
-     .AnyAsync(
-  user => user.Email == email.ToLowerInvariant(),
-         cancellationToken);
+        return await _dbContext.Users
+            .AnyAsync(
+                user => user.Email == email.ToLowerInvariant(),
+                cancellationToken);
     }
 }

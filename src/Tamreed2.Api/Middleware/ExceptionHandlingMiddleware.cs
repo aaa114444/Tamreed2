@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Tamreed2.Application.Common.Exceptions;
 using Tamreed2.Domain.Common.Exceptions;
@@ -102,7 +102,7 @@ public sealed class ExceptionHandlingMiddleware
             Status = statusCode,
             Title = GetTitle(statusCode),
             Detail = statusCode == StatusCodes.Status500InternalServerError
-                ? "An unexpected error occurred. Please try again later."
+                ? $"{exception.GetType().Name}: {exception.Message}"
                 : exception.Message,
             Instance = context.Request.Path
         };
@@ -127,3 +127,4 @@ public sealed class ExceptionHandlingMiddleware
         };
     }
 }
+
