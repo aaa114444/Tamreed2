@@ -1,53 +1,75 @@
 ﻿import { useTranslation } from "react-i18next";
-import { HeartPulse } from "lucide-react";
+import { HeartPulse, ArrowUpRight, ArrowUpLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language.startsWith("ar");
+  const Arrow = isArabic ? ArrowUpLeft : ArrowUpRight;
 
   return (
-    <footer className="footer">
-      <div className="container footer-main">
-        <div className="footer-brand">
-          <a href="#home" className="brand brand-footer">
-            <span className="brand-symbol">
-              <HeartPulse size={25} />
-            </span>
-            <span className="brand-copy">
-              <strong>{t("brand")}</strong>
-              <small>{t("brandTagline")}</small>
-            </span>
-          </a>
-          <p>{t("footer.description")}</p>
-        </div>
+    <footer className="footer footer-editorial">
+      <div className="container">
+        <div className="footer-editorial-main">
+          <div className="footer-editorial-brand">
+            <a href="#home" className="brand brand-footer">
+              <span className="brand-logo">
+                <img src="/care-plus-logo.png" alt="Care Plus" />
+              </span>
+              <span className="brand-copy">
+                <strong>{t("brand")}</strong>
+                <small>{t("brandTagline")}</small>
+              </span>
+            </a>
 
-        <div className="footer-column">
-          <h4>{t("footer.links")}</h4>
-          <a href="#home">{t("nav.home")}</a>
-          <a href="#services">{t("nav.services")}</a>
-          <a href="#about">{t("nav.about")}</a>
-          <a href="#contact">{t("nav.contact")}</a>
-        </div>
+            <p>{t("footer.description")}</p>
 
-        <div className="footer-column">
-          <h4>{t("footer.follow")}</h4>
-          <a href="#contact">Contact Tamreed</a>
-          <a href="#services">{t("services.all")}</a>
-          <a href="#about">{t("about.button")}</a>
-        </div>
-
-        <div className="footer-note">
-          <div className="footer-heart">
-            <HeartPulse size={27} />
+            <a href="#contact" className="footer-contact-link">
+              {isArabic ? "تواصل مع فريقنا" : "Get in touch"}
+              <Arrow size={16} />
+            </a>
           </div>
-          <strong>{t("footer.tagline")}</strong>
-          <p>{t("hero.note")}</p>
-        </div>
-      </div>
 
-      <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} Tamreed. {t("footer.rights")}</span>
-        <span>{t("footer.tagline")}</span>
+          <div className="footer-editorial-column">
+            <h4>{t("footer.links")}</h4>
+            <a href="#home">{t("nav.home")}</a>
+            <a href="#services">{t("nav.services")}</a>
+            <a href="#about">{t("nav.about")}</a>
+            <a href="#process">{t("process.title")}</a>
+            <a href="#contact">{t("nav.contact")}</a>
+          </div>
+
+          <div className="footer-editorial-column">
+            <h4>{isArabic ? "خدماتنا" : "Our services"}</h4>
+            <a href="#services">{t("services.home.title")}</a>
+            <a href="#services">{t("services.physio.title")}</a>
+            <a href="#services">{t("services.medical.title")}</a>
+            <a href="#services">{t("services.all")}</a>
+          </div>
+
+          <div className="footer-editorial-note">
+            <span className="footer-editorial-icon">
+              <HeartPulse size={27} />
+            </span>
+            <h3>{t("footer.tagline")}</h3>
+            <p>{t("hero.note")}</p>
+            <Link to="/login" className="footer-login-link">
+              {isArabic ? "تسجيل الدخول" : "Sign in"}
+              <Arrow size={16} />
+            </Link>
+          </div>
+        </div>
+
+        <div className="footer-editorial-bottom">
+          <span>
+            © {new Date().getFullYear()} Care Plus. {t("footer.rights")}
+          </span>
+          <a href="#home">
+            {isArabic ? "العودة إلى الأعلى ↑" : "Back to top ↑"}
+          </a>
+        </div>
       </div>
     </footer>
   );
 }
+

@@ -5,7 +5,10 @@ import { useTranslation } from "react-i18next";
 import TopStrip from "./components/layout/TopStrip";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import SeoManager from "./components/SeoManager";
+
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 
 import HeroSection from "./components/sections/HeroSection";
 import ServicesSection from "./components/sections/ServicesSection";
@@ -18,13 +21,14 @@ import ContactSection from "./components/sections/ContactSection";
 import AuthPage from "./pages/AuthPage";
 import BookingPage from "./pages/BookingPage";
 import MyBookingsPage from "./pages/MyBookingsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 function HomePage() {
   return (
     <div className="site-shell">
       <TopStrip />
       <Header />
-
       <main>
         <HeroSection />
         <ServicesSection />
@@ -34,7 +38,6 @@ function HomePage() {
         <CtaSection />
         <ContactSection />
       </main>
-
       <Footer />
     </div>
   );
@@ -51,8 +54,13 @@ function App() {
   }, [isArabic]);
 
   return (
-    <Routes>
+    <>
+      <SeoManager />
+      <>
+      <SeoManager />
+      <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/services/:id" element={<ServiceDetailsPage />} />
       <Route path="/login" element={<AuthPage mode="login" />} />
       <Route path="/register" element={<AuthPage mode="register" />} />
 
@@ -61,9 +69,18 @@ function App() {
         <Route path="/my-bookings" element={<MyBookingsPage />} />
       </Route>
 
+      <Route element={<AdminRoute />}>
+        <Route path="/admin" element={<AdminDashboardPage />} />
+      </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        </Routes>
+    </>
+    </>
   );
 }
 
 export default App;
+
+
+

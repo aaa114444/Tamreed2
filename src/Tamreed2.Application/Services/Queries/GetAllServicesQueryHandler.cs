@@ -9,8 +9,7 @@ public sealed class GetAllServicesQueryHandler
 {
     private readonly IServiceRepository _serviceRepository;
 
-    public GetAllServicesQueryHandler(
-        IServiceRepository serviceRepository)
+    public GetAllServicesQueryHandler(IServiceRepository serviceRepository)
     {
         _serviceRepository = serviceRepository;
     }
@@ -19,17 +18,20 @@ public sealed class GetAllServicesQueryHandler
         GetAllServicesQuery request,
         CancellationToken cancellationToken)
     {
-        var services = await _serviceRepository.GetAllAsync(
-            cancellationToken);
+        var services = await _serviceRepository.GetAllAsync(cancellationToken);
 
-        return services
-            .Select(service => new ServiceResponse(
-                service.Id,
-                service.Name,
-                service.Description,
-                service.Price,
-                service.Status.ToString(),
-                service.CreatedAtUtc))
-            .ToList();
+        return services.Select(service => new ServiceResponse(
+            service.Id,
+            service.Title,
+            service.Name,
+            service.Description,
+            service.Points,
+            service.TitleAr,
+            service.NameAr,
+            service.DescriptionAr,
+            service.PointsAr,
+            service.Status.ToString(),
+            service.CreatedAtUtc
+        )).ToList();
     }
 }

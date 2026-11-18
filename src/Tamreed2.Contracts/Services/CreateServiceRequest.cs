@@ -1,7 +1,12 @@
 ﻿namespace Tamreed2.Contracts.Services;
 
 public sealed record CreateServiceRequest(
+    string Title,
     string Name,
     string Description,
-    decimal Price
+    IReadOnlyList<string> Points,
+    string TitleAr,
+    string NameAr,
+    string DescriptionAr,
+    IReadOnlyList<string> PointsAr
 );

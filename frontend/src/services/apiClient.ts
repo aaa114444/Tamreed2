@@ -17,14 +17,9 @@ export async function apiRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  if (!API_BASE_URL) {
-    throw new Error(
-      "API URL is not configured. Set VITE_API_BASE_URL in .env.local."
-    );
-  }
-
   const normalizedPath = path.replace(/^\/+/, "");
-  const url = `${API_BASE_URL}/${normalizedPath}`;
+  const baseUrl = API_BASE_URL || window.location.origin;
+  const url = `${baseUrl}/${normalizedPath}`;
 
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");

@@ -1,4 +1,3 @@
-
 using Tamreed2.Domain.Bookings;
 using Tamreed2.Domain.Bookings.Events;
 using Tamreed2.Domain.Bookings.ValueObjects;
@@ -9,130 +8,79 @@ namespace Tamreed2.UnitTests.Domain.Bookings;
 
 public class BookingTests
 {
-    private static Address CreateAddress()
-    {
-        return new Address(
-            "Cairo",
-            "Nasr City",
-            "Street 1",
-            "15");
-    }
+    private static Address CreateAddress() =>
+        new("Cairo", "Nasr City", "Street 1", "15");
+
+    private static Booking CreateTestBooking() =>
+        Booking.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTimeOffset.UtcNow.AddDays(2),
+            CreateAddress());
 
     [Fact]
     public void Create_WithValidData_ShouldCreatePendingBooking()
     {
-        // Arrange
         var customerId = Guid.NewGuid();
         var serviceId = Guid.NewGuid();
         var scheduledAt = DateTimeOffset.UtcNow.AddDays(2);
         var address = CreateAddress();
 
-        // Act
         var booking = Booking.Create(
-            customerId,
-            serviceId,
-            scheduledAt,
-            address,
-            500m,
+            customerId, serviceId, scheduledAt, address,
             "Please call before arrival.");
 
-        // Assert
         Assert.NotEqual(Guid.Empty, booking.Id);
         Assert.Equal(customerId, booking.CustomerId);
         Assert.Equal(serviceId, booking.ServiceId);
         Assert.Equal(scheduledAt, booking.ScheduledAtUtc);
         Assert.Equal(address, booking.Address);
-        Assert.Equal(500m, booking.PriceAtBooking);
-        Assert.Equal(
-            "Please call before arrival.",
-            booking.Notes);
+        Assert.Equal("Please call before arrival.", booking.Notes);
         Assert.Equal(BookingStatus.Pending, booking.Status);
     }
 
     [Fact]
-    public void Create_WithEmptyCustomerId_ShouldThrowDomainException()
-    {
+    public void Create_WithEmptyCustomerId_ShouldThrowDomainException() =>
         Assert.Throws<DomainException>(() =>
-            Booking.Create(
-                Guid.Empty,
-                Guid.NewGuid(),
-                DateTimeOffset.UtcNow.AddDays(1),
-                CreateAddress(),
-                500m));
-    }
+            Booking.Create(Guid.Empty, Guid.NewGuid(),
+                DateTimeOffset.UtcNow.AddDays(1), CreateAddress()));
 
     [Fact]
-    public void Create_WithEmptyServiceId_ShouldThrowDomainException()
-    {
+    public void Create_WithEmptyServiceId_ShouldThrowDomainException() =>
         Assert.Throws<DomainException>(() =>
-            Booking.Create(
-                Guid.NewGuid(),
-                Guid.Empty,
-                DateTimeOffset.UtcNow.AddDays(1),
-                CreateAddress(),
-                500m));
-    }
+            Booking.Create(Guid.NewGuid(), Guid.Empty,
+                DateTimeOffset.UtcNow.AddDays(1), CreateAddress()));
 
     [Fact]
     public void Create_WithNonUtcDate_ShouldThrowDomainException()
     {
-        var nonUtcDate = new DateTimeOffset(
-            2026, 12, 1, 10, 0, 0,
-            TimeSpan.FromHours(2));
+        var date = new DateTimeOffset(
+            2026, 12, 1, 10, 0, 0, TimeSpan.FromHours(2));
 
         Assert.Throws<DomainException>(() =>
-            Booking.Create(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                nonUtcDate,
-                CreateAddress(),
-                500m));
+            Booking.Create(Guid.NewGuid(), Guid.NewGuid(),
+                date, CreateAddress()));
     }
 
     [Fact]
-    public void Create_WithNegativePrice_ShouldThrowDomainException()
-    {
-        Assert.Throws<DomainException>(() =>
-            Booking.Create(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                DateTimeOffset.UtcNow.AddDays(1),
-                CreateAddress(),
-                -100m));
-    }
-
-    [Fact]
-    public void Create_WithNullAddress_ShouldThrowArgumentNullException()
-    {
+    public void Create_WithNullAddress_ShouldThrowArgumentNullException() =>
         Assert.Throws<ArgumentNullException>(() =>
-            Booking.Create(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                DateTimeOffset.UtcNow.AddDays(1),
-                null!,
-                500m));
-    }
+            Booking.Create(Guid.NewGuid(), Guid.NewGuid(),
+                DateTimeOffset.UtcNow.AddDays(1), null!));
 
     [Fact]
     public void Create_ShouldRaiseBookingCreatedEvent()
     {
-        // Arrange
         var customerId = Guid.NewGuid();
         var serviceId = Guid.NewGuid();
 
-        // Act
         var booking = Booking.Create(
-            customerId,
-            serviceId,
-            DateTimeOffset.UtcNow.AddDays(1),
-            CreateAddress(),
-            500m);
-
-        // Assert
-        var domainEvent = Assert.Single(booking.DomainEvents);
+            customerId, serviceId,
+            DateTimeOffset.UtcNow.AddDays(1), CreateAddress());
 
         var createdEvent =
-            Assert.IsType<BookingCreatedEvent>(domainEvent);
+            Assert.IsType<BookingCreatedEvent>(
+                Assert.Single(booking.DomainEvents));
 
         Assert.Equal(booking.Id, createdEvent.BookingId);
         Assert.Equal(customerId, createdEvent.CustomerId);
@@ -144,199 +92,137 @@ public class BookingTests
     public void Create_WithBlankNotes_ShouldStoreNull()
     {
         var booking = Booking.Create(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            DateTimeOffset.UtcNow.AddDays(1),
-            CreateAddress(),
-            500m,
-            "   ");
+            Guid.NewGuid(), Guid.NewGuid(),
+            DateTimeOffset.UtcNow.AddDays(1), CreateAddress(), "   ");
 
         Assert.Null(booking.Notes);
     }
 
     [Fact]
-    public void Confirm_WhenBookingIsPending_ShouldChangeStatusToConfirmed()
+    public void Confirm_WhenPending_ShouldChangeStatus()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
-
         Assert.Equal(BookingStatus.Confirmed, booking.Status);
     }
 
     [Fact]
-    public void Confirm_WhenBookingIsAlreadyConfirmed_ShouldThrowDomainException()
+    public void Confirm_WhenAlreadyConfirmed_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
-
         Assert.Throws<DomainException>(() => booking.Confirm());
     }
 
     [Fact]
-    public void Confirm_ShouldRaiseBookingConfirmedEvent()
+    public void Confirm_ShouldRaiseEvent()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
-
-        Assert.Contains(
-            booking.DomainEvents,
-            domainEvent => domainEvent is BookingConfirmedEvent);
+        Assert.Contains(booking.DomainEvents,
+            e => e is BookingConfirmedEvent);
     }
-
-    // Test helper
-    private static Booking CreateTestBooking()
-    {
-        return Booking.Create(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            DateTimeOffset.UtcNow.AddDays(2),
-            new Address(
-                "Cairo",
-                "Nasr City",
-                "Street 1",
-                "15"),
-            500m);
-    }
-
 
     [Fact]
-    public void StartService_WhenBookingIsConfirmed_ShouldStartService()
+    public void StartService_WhenConfirmed_ShouldStartService()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
-
         booking.StartService();
-
         Assert.Equal(BookingStatus.InProgress, booking.Status);
     }
 
     [Fact]
-    public void StartService_WhenBookingIsPending_ShouldThrowDomainException()
+    public void StartService_WhenPending_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
-        Assert.Throws<DomainException>(
-            () => booking.StartService());
+        Assert.Throws<DomainException>(() => booking.StartService());
     }
 
     [Fact]
-    public void StartService_ShouldRaiseBookingStartedEvent()
+    public void StartService_ShouldRaiseEvent()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
         booking.StartService();
-
-        Assert.Contains(
-            booking.DomainEvents,
-            domainEvent => domainEvent is BookingStartedEvent);
+        Assert.Contains(booking.DomainEvents,
+            e => e is BookingStartedEvent);
     }
 
     [Fact]
-    public void CompleteService_WhenBookingIsInProgress_ShouldCompleteBooking()
+    public void CompleteService_WhenInProgress_ShouldComplete()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
         booking.StartService();
-
         booking.CompleteService();
-
         Assert.Equal(BookingStatus.Completed, booking.Status);
     }
 
     [Fact]
-    public void CompleteService_WhenBookingIsPending_ShouldThrowDomainException()
+    public void CompleteService_WhenPending_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
-        Assert.Throws<DomainException>(
-            () => booking.CompleteService());
+        Assert.Throws<DomainException>(() => booking.CompleteService());
     }
 
     [Fact]
-    public void CompleteService_ShouldRaiseBookingCompletedEvent()
+    public void CompleteService_ShouldRaiseEvent()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
         booking.StartService();
         booking.CompleteService();
-
-        Assert.Contains(
-            booking.DomainEvents,
-            domainEvent => domainEvent is BookingCompletedEvent);
+        Assert.Contains(booking.DomainEvents,
+            e => e is BookingCompletedEvent);
     }
 
     [Theory]
     [InlineData(BookingStatus.Pending)]
     [InlineData(BookingStatus.Confirmed)]
-    public void Cancel_WhenBookingHasNotStarted_ShouldCancelBooking(
-        BookingStatus initialStatus)
+    public void Cancel_WhenNotStarted_ShouldCancel(BookingStatus status)
     {
         var booking = CreateTestBooking();
-
-        if (initialStatus == BookingStatus.Confirmed)
-        {
+        if (status == BookingStatus.Confirmed)
             booking.Confirm();
-        }
 
         booking.Cancel();
-
         Assert.Equal(BookingStatus.Cancelled, booking.Status);
     }
 
     [Fact]
-    public void Cancel_WhenBookingIsInProgress_ShouldThrowDomainException()
+    public void Cancel_WhenInProgress_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
         booking.StartService();
-
-        Assert.Throws<DomainException>(
-            () => booking.Cancel());
+        Assert.Throws<DomainException>(() => booking.Cancel());
     }
 
     [Fact]
-    public void Cancel_WhenBookingIsCompleted_ShouldThrowDomainException()
+    public void Cancel_WhenCompleted_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
         booking.Confirm();
         booking.StartService();
         booking.CompleteService();
-
-        Assert.Throws<DomainException>(
-            () => booking.Cancel());
+        Assert.Throws<DomainException>(() => booking.Cancel());
     }
 
     [Fact]
-    public void Cancel_WhenBookingIsAlreadyCancelled_ShouldThrowDomainException()
+    public void Cancel_WhenAlreadyCancelled_ShouldThrow()
     {
         var booking = CreateTestBooking();
-
         booking.Cancel();
-
-        Assert.Throws<DomainException>(
-            () => booking.Cancel());
+        Assert.Throws<DomainException>(() => booking.Cancel());
     }
 
     [Fact]
-    public void Cancel_ShouldRaiseBookingCancelledEvent()
+    public void Cancel_ShouldRaiseEvent()
     {
         var booking = CreateTestBooking();
-
         booking.Cancel();
-
-        Assert.Contains(
-            booking.DomainEvents,
-            domainEvent => domainEvent is BookingCancelledEvent);
+        Assert.Contains(booking.DomainEvents,
+            e => e is BookingCancelledEvent);
     }
-
-
 }

@@ -1,10 +1,10 @@
-import i18n from "i18next";
+﻿import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 const resources = {
   en: {
     translation: {
-      brand: "tamreed",
+      brand: "Care Plus",
       brandTagline: "CARE THAT COMES HOME",
       nav: {
         home: "Home",
@@ -22,7 +22,7 @@ const resources = {
         highlight: "the comfort of home.",
         description: "Professional home healthcare services delivered with compassion, expertise, and care you can trust.",
         primary: "Explore our services",
-        secondary: "Discover Tamreed",
+        secondary: "Discover Care Plus",
         note: "Care designed around you and your family.",
         badge: "Care you can count on",
         stat: "Personalized care",
@@ -54,7 +54,7 @@ const resources = {
       about: {
         eyebrow: "A DIFFERENT KIND OF CARE",
         title: "Because feeling better starts with feeling at home.",
-        description: "At Tamreed, we believe quality healthcare should feel personal. We bring compassionate healthcare services closer to you, making it easier to receive the care you need in a familiar and comfortable environment.",
+        description: "At Care Plus, we believe quality healthcare should feel personal. We bring compassionate healthcare services closer to you, making it easier to receive the care you need in a familiar and comfortable environment.",
         point1: "Care centered around your needs",
         point2: "A comfortable home environment",
         point3: "A commitment to compassion and quality",
@@ -73,7 +73,7 @@ const resources = {
         step3desc: "Get the care you need in the comfort of your home.",
       },
       why: {
-        eyebrow: "THE TAMREED DIFFERENCE",
+        eyebrow: "THE CARE PLUS DIFFERENCE",
         title: "Care you can feel good about.",
         description: "Your health and comfort guide everything we do.",
         one: "A personal approach",
@@ -92,7 +92,7 @@ const resources = {
       contact: {
         eyebrow: "GET IN TOUCH",
         title: "We would love to hear from you.",
-        description: "Have a question about our services? Reach out and learn how Tamreed can support you.",
+        description: "Have a question about our services? Reach out and learn how Care Plus can support you.",
         email: "Email",
         location: "Location",
         locationValue: "Contact us for service availability.",
@@ -108,9 +108,9 @@ const resources = {
       },
       auth: {
         loginTitle: "Welcome back",
-        loginDescription: "Sign in to continue to your Tamreed account.",
+        loginDescription: "Sign in to continue to your Care Plus account.",
         registerTitle: "Create your account",
-        registerDescription: "Join Tamreed and make booking home healthcare easier.",
+        registerDescription: "Join Care Plus and make booking home healthcare easier.",
         firstName: "First name",
         lastName: "Last name",
         email: "Email address",
@@ -167,7 +167,7 @@ const resources = {
   },
   ar: {
     translation: {
-      brand: "تمريض",
+      brand: "كير بلس",
       brandTagline: "رعاية تصلك حتى باب بيتك",
       nav: {
         home: "الرئيسية",
@@ -175,14 +175,17 @@ const resources = {
         about: "من نحن",
         contact: "تواصل معنا",
         book: "استكشف خدماتنا",
+        login: "تسجيل الدخول",
+        register: "إنشاء حساب",
+        logout: "تسجيل الخروج",
       },
       hero: {
-        eyebrow: "رعاية طبية باهتمام وراحة في منزلك",
+        eyebrow: "رعاية صحية باهتمام وراحة في منزلك",
         title: "صحتك تستحق",
         highlight: "راحة منزلك.",
         description: "خدمات رعاية صحية منزلية احترافية نقدمها باهتمام وخبرة لنمنحك ولعائلتك راحة البال.",
         primary: "استكشف خدماتنا",
-        secondary: "اكتشف تمريض",
+        secondary: "اكتشف كير بلس",
         note: "رعاية نهتم فيها بك وبعائلتك.",
         badge: "رعاية يمكنك الاعتماد عليها",
         stat: "رعاية تناسب احتياجاتك",
@@ -193,9 +196,9 @@ const resources = {
         three: "راحتك أولويتنا",
       },
       services: {
-        eyebrow: "ماذا نقدم",
+        eyebrow: "خدماتنا",
         title: "رعاية تناسب احتياجاتك.",
-        description: "خدمات صحية نقدمها باهتمام لتدعم صحتك وراحتك في مختلف مراحل الحياة.",
+        description: "خدمات صحية نقدمها باهتمام لدعم صحتك وراحتك في مختلف مراحل الحياة.",
         home: {
           title: "التمريض المنزلي",
           description: "رعاية تمريضية احترافية ودعم صحي في راحة وخصوصية منزلك.",
@@ -214,7 +217,7 @@ const resources = {
       about: {
         eyebrow: "رعاية مختلفة",
         title: "لأن التعافي يبدأ بالشعور بالراحة في منزلك.",
-        description: "في تمريض، نؤمن أن الرعاية الصحية الجيدة تبدأ بالاهتمام الحقيقي. نقرّب إليك الخدمات الصحية لتتمكن من الحصول على الرعاية التي تحتاجها في بيئة مألوفة ومريحة.",
+        description: "في كير بلس، نؤمن أن الرعاية الصحية الجيدة تبدأ بالاهتمام الحقيقي. نقرّب إليك الخدمات الصحية لتتمكن من الحصول على الرعاية التي تحتاجها في بيئة مألوفة ومريحة.",
         point1: "رعاية تتمحور حول احتياجاتك",
         point2: "راحة وخصوصية منزلك",
         point3: "التزام بالاهتمام وجودة الرعاية",
@@ -233,7 +236,7 @@ const resources = {
         step3desc: "احصل على الرعاية التي تحتاجها في راحة منزلك.",
       },
       why: {
-        eyebrow: "ما يميز تمريض",
+        eyebrow: "ما يميز كير بلس",
         title: "رعاية تمنحك راحة البال.",
         description: "صحتك وراحتك هما الأساس في كل ما نقدمه.",
         one: "اهتمام شخصي",
@@ -252,7 +255,7 @@ const resources = {
       contact: {
         eyebrow: "تواصل معنا",
         title: "يسعدنا التواصل معك.",
-        description: "هل لديك استفسار عن خدماتنا؟ تواصل معنا لتعرف كيف يمكن لتمريض مساعدتك.",
+        description: "هل لديك استفسار عن خدماتنا؟ تواصل معنا لتعرف كيف يمكن لكير بلس مساعدتك.",
         email: "البريد الإلكتروني",
         location: "الموقع",
         locationValue: "تواصل معنا لمعرفة المناطق المتاحة للخدمة.",
@@ -268,9 +271,9 @@ const resources = {
       },
       auth: {
         loginTitle: "مرحباً بعودتك",
-        loginDescription: "سجل الدخول للمتابعة إلى حسابك في تمريض.",
+        loginDescription: "سجل الدخول للمتابعة إلى حسابك في كير بلس.",
         registerTitle: "أنشئ حسابك",
-        registerDescription: "انضم إلى تمريض واجعل حجز الرعاية الصحية المنزلية أسهل.",
+        registerDescription: "انضم إلى كير بلس واجعل حجز الرعاية الصحية المنزلية أسهل.",
         firstName: "الاسم الأول",
         lastName: "اسم العائلة",
         email: "البريد الإلكتروني",
@@ -285,7 +288,7 @@ const resources = {
         success: "تم تسجيل الدخول بنجاح.",
         passwordHint: "8 أحرف على الأقل، تشمل حرفاً كبيراً وصغيراً ورقماً ورمزاً خاصاً.",
         backHome: "العودة للرئيسية",
-        genericError: "حدث خطأ. يرجى المحاولة مرة أخرى."
+        genericError: "حدث خطأ. يرجى المحاولة مرة أخرى.",
       },
       booking: {
         title: "احجز خدمة",
@@ -310,7 +313,7 @@ const resources = {
       },
       myBookings: {
         title: "حجوزاتي",
-        description: "اطّلع على حجوزات خدمات الرعاية الصحية وتابعها.",
+        description: "اطّلع على حجوزات الرعاية الصحية وتابع حالتها.",
         empty: "ليس لديك أي حجوزات حتى الآن.",
         service: "الخدمة",
         date: "موعد الحجز",
@@ -337,3 +340,6 @@ i18n.use(initReactI18next).init({
 });
 
 export default i18n;
+
+
+

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tamreed2.Domain.Bookings;
 
@@ -25,10 +25,6 @@ public sealed class BookingConfiguration
         builder.Property(booking => booking.Notes)
             .HasMaxLength(1000)
             .IsRequired(false);
-
-        builder.Property(booking => booking.PriceAtBooking)
-            .HasPrecision(18, 2)
-            .IsRequired();
 
         builder.Property(booking => booking.Status)
             .HasConversion<string>()

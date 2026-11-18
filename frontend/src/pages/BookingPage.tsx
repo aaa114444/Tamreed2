@@ -90,9 +90,6 @@ export default function BookingPage() {
     };
   }, [searchParams, t]);
 
-  const selectedService = services.find(
-    (service) => service.id === serviceId
-  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -167,7 +164,7 @@ export default function BookingPage() {
         <div className="auth-heading">
           <span className="eyebrow">
             <span className="eyebrow-line" />
-            TAMREED
+            CARE PLUS
           </span>
           <h1>{t("booking.title")}</h1>
           <p>{t("booking.description")}</p>
@@ -210,16 +207,6 @@ export default function BookingPage() {
                   </option>
                 ))}
               </select>
-              {selectedService && (
-                <small className="auth-hint">
-                  {t("booking.price")}:{" "}
-                  {new Intl.NumberFormat(isArabic ? "ar-EG" : "en-EG", {
-                    style: "currency",
-                    currency: "EGP",
-                    maximumFractionDigits: 0,
-                  }).format(selectedService.price)}
-                </small>
-              )}
             </div>
 
             <div className="booking-grid">
@@ -329,3 +316,5 @@ export default function BookingPage() {
     </section>
   );
 }
+
+

@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tamreed2.Application.Services.Commands.CreateService;
@@ -20,7 +20,6 @@ public class ServicesController : ControllerBase
         _sender = sender;
     }
 
-    // POST: api/services (Admin only)
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -32,9 +31,14 @@ public class ServicesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new CreateServiceCommand(
+            request.Title,
             request.Name,
             request.Description,
-            request.Price);
+            request.Points,
+            request.TitleAr,
+            request.NameAr,
+            request.DescriptionAr,
+            request.PointsAr);
 
         var serviceId = await _sender.Send(command, cancellationToken);
 
@@ -43,7 +47,6 @@ public class ServicesController : ControllerBase
             new { Id = serviceId });
     }
 
-    // GET: api/services/{id} (Public)
     [AllowAnonymous]
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,7 +70,6 @@ public class ServicesController : ControllerBase
         return Ok(service);
     }
 
-    // GET: api/services (Public)
     [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ServiceResponse>), StatusCodes.Status200OK)]
@@ -81,7 +83,6 @@ public class ServicesController : ControllerBase
         return Ok(services);
     }
 
-    // PUT: api/services/{id} (Admin only)
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -96,9 +97,14 @@ public class ServicesController : ControllerBase
     {
         var command = new UpdateServiceCommand(
             id,
+            request.Title,
             request.Name,
             request.Description,
-            request.Price);
+            request.Points,
+            request.TitleAr,
+            request.NameAr,
+            request.DescriptionAr,
+            request.PointsAr);
 
         var serviceId = await _sender.Send(command, cancellationToken);
 

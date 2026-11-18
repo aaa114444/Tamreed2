@@ -22,22 +22,19 @@ public sealed class CreateServiceCommandHandler
         CreateServiceCommand request,
         CancellationToken cancellationToken)
     {
-        // 1. Create the Service domain entity.
         var service = Service.Create(
+            request.Title,
             request.Name,
             request.Description,
-            request.Price);
+            request.Points,
+            request.TitleAr,
+            request.NameAr,
+            request.DescriptionAr,
+            request.PointsAr);
 
-        // 2. Add it to the repository.
-        await _serviceRepository.AddAsync(
-            service,
-            cancellationToken);
+        await _serviceRepository.AddAsync(service, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // 3. Save changes to the database.
-        await _unitOfWork.SaveChangesAsync(
-            cancellationToken);
-
-        // 4. Return the generated service ID.
         return service.Id;
     }
 }

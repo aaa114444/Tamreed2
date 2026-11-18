@@ -1,4 +1,4 @@
-namespace Tamreed2.Contracts.Bookings;
+﻿namespace Tamreed2.Contracts.Bookings;
 
 public sealed record BookingResponse(
     Guid Id,
@@ -11,7 +11,6 @@ public sealed record BookingResponse(
     string BuildingNumber,
     string? ApartmentNumber,
     string? Notes,
-    decimal PriceAtBooking,
     string Status,
     DateTimeOffset CreatedAtUtc
 );

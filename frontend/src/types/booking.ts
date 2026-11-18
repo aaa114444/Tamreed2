@@ -25,7 +25,6 @@ export interface BookingResponse {
   buildingNumber: string;
   apartmentNumber: string | null;
   notes: string | null;
-  priceAtBooking: number;
   status: string;
   createdAtUtc: string;
 }

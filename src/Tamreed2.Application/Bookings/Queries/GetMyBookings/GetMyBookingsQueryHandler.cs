@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using Tamreed2.Application.Common.Exceptions;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Contracts.Bookings;
@@ -54,9 +54,9 @@ public sealed class GetMyBookingsQueryHandler
             booking.Address.BuildingNumber,
             booking.Address.ApartmentNumber,
             booking.Notes,
-            booking.PriceAtBooking,
             booking.Status.ToString(),
             booking.CreatedAtUtc
         )).ToList();
     }
 }
+

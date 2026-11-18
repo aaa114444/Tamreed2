@@ -1,4 +1,4 @@
-﻿import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export type ServiceColor = "mint" | "blue" | "peach";
 
@@ -12,9 +12,10 @@ export interface ServiceDefinition {
 
 export interface ServiceResponse {
   id: string;
+  title: string;
   name: string;
   description: string;
-  price: number;
+  points: string[];
   status: string;
   createdAtUtc: string;
 }

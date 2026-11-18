@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HeartPulse, ArrowLeft, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -98,7 +98,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
         <div className="auth-heading">
           <span className="eyebrow">
             <span className="eyebrow-line" />
-            TAMREED
+            CARE PLUS
           </span>
           <h1>
             {isRegister
@@ -215,3 +215,4 @@ export default function AuthPage({ mode }: AuthPageProps) {
     </section>
   );
 }
+

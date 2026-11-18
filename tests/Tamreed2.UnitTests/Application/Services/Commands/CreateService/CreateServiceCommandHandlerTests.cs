@@ -1,4 +1,3 @@
-
 using Moq;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Application.Services.Commands.CreateService;
@@ -9,193 +8,111 @@ namespace Tamreed2.UnitTests.Application.Services.Commands.CreateService;
 
 public class CreateServiceCommandHandlerTests
 {
-    private readonly Mock<IServiceRepository> _serviceRepositoryMock;
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IServiceRepository> _repository = new();
+    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly CreateServiceCommandHandler _handler;
 
     public CreateServiceCommandHandlerTests()
     {
-        _serviceRepositoryMock = new Mock<IServiceRepository>();
-        _unitOfWorkMock = new Mock<IUnitOfWork>();
-
         _handler = new CreateServiceCommandHandler(
-            _serviceRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _repository.Object, _unitOfWork.Object);
+    }
+
+    private static CreateServiceCommand ValidCommand() =>
+        new("Home Nursing", "Nursing", "Description",
+            new[] { "Point 1" }, "??????? ???????",
+            "?????", "?????", new[] { "?????? ??????" });
+
+    private void SetupDependencies()
+    {
+        _repository.Setup(x => x.AddAsync(
+            It.IsAny<Service>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _unitOfWork.Setup(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
     }
 
     [Fact]
     public async Task Handle_WithValidCommand_ShouldCreateAndAddService()
     {
-        // Arrange
-        var command = new CreateServiceCommand(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        SetupDependencies();
+        Service? added = null;
 
-        Service? addedService = null;
-
-        _serviceRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                It.IsAny<CancellationToken>()))
-            .Callback<Service, CancellationToken>(
-                (service, _) => addedService = service)
+        _repository.Setup(x => x.AddAsync(
+            It.IsAny<Service>(), It.IsAny<CancellationToken>()))
+            .Callback<Service, CancellationToken>((s, _) => added = s)
             .Returns(Task.CompletedTask);
 
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+        await _handler.Handle(ValidCommand(), CancellationToken.None);
 
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        Assert.NotNull(addedService);
-        Assert.Equal("Home Nursing", addedService.Name);
-        Assert.Equal(
-            "Professional nursing services at home.",
-            addedService.Description);
-        Assert.Equal(500m, addedService.Price);
-        Assert.Equal(ServiceStatus.Active, addedService.Status);
-
-        _serviceRepositoryMock.Verify(
-            repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        Assert.NotNull(added);
+        Assert.Equal("Home Nursing", added.Title);
+        Assert.Equal("Description", added.Description);
+        Assert.Equal("??????? ???????", added.TitleAr);
+        Assert.Equal(ServiceStatus.Active, added.Status);
+        _repository.Verify(x => x.AddAsync(
+            It.IsAny<Service>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithValidCommand_ShouldSaveChanges()
+    public async Task Handle_ShouldSaveChanges()
     {
-        // Arrange
-        var command = new CreateServiceCommand(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        SetupDependencies();
+        await _handler.Handle(ValidCommand(), CancellationToken.None);
 
-        _serviceRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        _unitOfWork.Verify(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithValidCommand_ShouldReturnCreatedServiceId()
+    public async Task Handle_ShouldReturnCreatedServiceId()
     {
-        // Arrange
-        var command = new CreateServiceCommand(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        SetupDependencies();
+        Service? added = null;
 
-        Service? addedService = null;
-
-        _serviceRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                It.IsAny<CancellationToken>()))
-            .Callback<Service, CancellationToken>(
-                (service, _) => addedService = service)
+        _repository.Setup(x => x.AddAsync(
+            It.IsAny<Service>(), It.IsAny<CancellationToken>()))
+            .Callback<Service, CancellationToken>((s, _) => added = s)
             .Returns(Task.CompletedTask);
 
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
-
-        // Act
         var result = await _handler.Handle(
-            command,
-            CancellationToken.None);
+            ValidCommand(), CancellationToken.None);
 
-        // Assert
-        Assert.NotNull(addedService);
-        Assert.Equal(addedService.Id, result);
+        Assert.NotNull(added);
+        Assert.Equal(added.Id, result);
         Assert.NotEqual(Guid.Empty, result);
     }
 
     [Fact]
     public async Task Handle_WhenRepositoryThrows_ShouldNotSaveChanges()
     {
-        // Arrange
-        var command = new CreateServiceCommand(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        _repository.Setup(x => x.AddAsync(
+            It.IsAny<Service>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Repository operation failed."));
 
-        _serviceRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException(
-                "Repository operation failed."));
-
-        // Act
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-            () => _handler.Handle(command, CancellationToken.None));
+            () => _handler.Handle(ValidCommand(), CancellationToken.None));
 
-        // Assert
         Assert.Equal("Repository operation failed.", exception.Message);
-
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()),
-            Times.Never);
+        _unitOfWork.Verify(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_ShouldPassCancellationTokenToDependencies()
+    public async Task Handle_ShouldPassCancellationToken()
     {
-        // Arrange
-        var command = new CreateServiceCommand(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        SetupDependencies();
+        using var source = new CancellationTokenSource();
 
-        using var cancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = cancellationTokenSource.Token;
+        await _handler.Handle(ValidCommand(), source.Token);
 
-        _serviceRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                cancellationToken))
-            .Returns(Task.CompletedTask);
-
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                cancellationToken))
-            .ReturnsAsync(1);
-
-        // Act
-        await _handler.Handle(command, cancellationToken);
-
-        // Assert
-        _serviceRepositoryMock.Verify(
-            repository => repository.AddAsync(
-                It.IsAny<Service>(),
-                cancellationToken),
-            Times.Once);
-
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                cancellationToken),
-            Times.Once);
+        _repository.Verify(x => x.AddAsync(
+            It.IsAny<Service>(), source.Token), Times.Once);
+        _unitOfWork.Verify(x => x.SaveChangesAsync(
+            source.Token), Times.Once);
     }
 }
+
+

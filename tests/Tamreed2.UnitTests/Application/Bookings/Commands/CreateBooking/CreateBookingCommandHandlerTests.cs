@@ -144,31 +144,6 @@ public class CreateBookingCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldUseServicePriceAsBookingPrice()
-    {
-        var service = CreateActiveService();
-        SetupActiveService(service);
-        SetupSuccessfulSave();
-
-        Booking? savedBooking = null;
-
-        _bookingRepositoryMock
-            .Setup(repository => repository.AddAsync(
-                It.IsAny<Booking>(),
-                It.IsAny<CancellationToken>()))
-            .Callback<Booking, CancellationToken>(
-                (booking, _) => savedBooking = booking)
-            .Returns(Task.CompletedTask);
-
-        await _handler.Handle(
-            CreateValidCommand(service.Id),
-            CancellationToken.None);
-
-        Assert.NotNull(savedBooking);
-        Assert.Equal(service.Price, savedBooking.PriceAtBooking);
-    }
-
-    [Fact]
     public async Task Handle_ShouldCreateAddressFromCommand()
     {
         var service = CreateActiveService();
@@ -349,10 +324,7 @@ public class CreateBookingCommandHandlerTests
 
     private static Service CreateActiveService()
     {
-        return Service.Create(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        return Service.Create("Home Nursing", "Nursing", "Professional nursing services at home.", new[] { "Qualified care" }, "??????? ???????", "?????", "????? ????? ??????", new[] { "????? ?????" });
     }
 
     private static CreateBookingCommand CreateValidCommand(
@@ -370,3 +342,4 @@ public class CreateBookingCommandHandlerTests
             Notes: notes);
     }
 }
+

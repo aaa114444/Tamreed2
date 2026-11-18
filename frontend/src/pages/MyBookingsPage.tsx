@@ -1,6 +1,14 @@
-﻿import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, HeartPulse } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  HeartPulse,
+  RefreshCw,
+  CalendarDays,
+  MapPin,
+  FileText,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { getMyBookings } from "../services/bookingService";
@@ -18,44 +26,39 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
   const [services, setServices] = useState<ServiceResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadBookings() {
-      try {
-        const [bookingResponse, serviceResponse] = await Promise.all([
-          getMyBookings(),
-          getServices(),
-        ]);
-
-        if (isMounted) {
-          setBookings(bookingResponse);
-          setServices(serviceResponse);
-          setError("");
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : t("myBookings.error")
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
+  const loadBookings = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
     }
 
-    loadBookings();
+    try {
+      const [bookingResponse, serviceResponse] = await Promise.all([
+        getMyBookings(),
+        getServices(),
+      ]);
 
-    return () => {
-      isMounted = false;
-    };
+      setBookings(bookingResponse);
+      setServices(serviceResponse);
+      setError("");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : t("myBookings.error")
+      );
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, [t]);
+
+  useEffect(() => {
+    void loadBookings();
+
+  }, [loadBookings]);
 
   function getServiceName(serviceId: string): string {
     return (
@@ -65,18 +68,45 @@ export default function MyBookingsPage() {
   }
 
   function formatDate(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
     return new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-EG", {
       dateStyle: "medium",
       timeStyle: "short",
-    }).format(new Date(value));
+    }).format(date);
   }
 
-  function formatPrice(value: number): string {
-    return new Intl.NumberFormat(isArabic ? "ar-EG" : "en-EG", {
-      style: "currency",
-      currency: "EGP",
-      maximumFractionDigits: 0,
-    }).format(value);
+  function getStatusLabel(status: string): string {
+    const normalized = status.toLowerCase();
+
+    const labels: Record<string, { en: string; ar: string }> = {
+      pending: { en: "Pending", ar: "قيد الانتظار" },
+      confirmed: { en: "Confirmed", ar: "تم التأكيد" },
+      inprogress: { en: "In progress", ar: "جارٍ التنفيذ" },
+      completed: { en: "Completed", ar: "مكتمل" },
+      cancelled: { en: "Cancelled", ar: "ملغي" },
+    };
+
+    const label = labels[normalized];
+
+    return label
+      ? isArabic ? label.ar : label.en
+      : status;
+  }
+
+  function getStatusClass(status: string): string {
+    const normalized = status.toLowerCase();
+
+    if (normalized === "confirmed") return "confirmed";
+    if (normalized === "completed") return "completed";
+    if (normalized === "cancelled") return "cancelled";
+    if (normalized === "inprogress") return "in-progress";
+
+    return "pending";
   }
 
   return (
@@ -100,10 +130,31 @@ export default function MyBookingsPage() {
         <div className="auth-heading">
           <span className="eyebrow">
             <span className="eyebrow-line" />
-            TAMREED
+            CARE PLUS
           </span>
           <h1>{t("myBookings.title")}</h1>
           <p>{t("myBookings.description")}</p>
+        </div>
+
+        <div className="bookings-toolbar">
+          <span>
+            {isArabic
+              ? `${bookings.length} طلب حجز`
+              : `${bookings.length} booking${bookings.length === 1 ? "" : "s"}`}
+          </span>
+
+          <button
+            type="button"
+            className="bookings-refresh-button"
+            onClick={() => void loadBookings(true)}
+            disabled={loading || refreshing}
+          >
+            <RefreshCw
+              size={16}
+              className={refreshing ? "refresh-spinning" : ""}
+            />
+            {isArabic ? "تحديث" : "Refresh"}
+          </button>
         </div>
 
         {loading && (
@@ -115,11 +166,19 @@ export default function MyBookingsPage() {
         {error && (
           <div className="auth-error" role="alert">
             {error}
+            <button
+              type="button"
+              className="bookings-error-retry"
+              onClick={() => void loadBookings(true)}
+            >
+              {isArabic ? "حاول مرة أخرى" : "Try again"}
+            </button>
           </div>
         )}
 
         {!loading && !error && bookings.length === 0 && (
           <div className="booking-empty">
+            <CalendarDays size={38} />
             <p>{t("myBookings.empty")}</p>
             <Link
               to="/#services"
@@ -147,28 +206,26 @@ export default function MyBookingsPage() {
                 <article className="booking-item" key={booking.id}>
                   <div className="booking-item-heading">
                     <h3>{getServiceName(booking.serviceId)}</h3>
-                    <span className="booking-status">
-                      {booking.status}
+                    <span className={`booking-status status-${getStatusClass(booking.status)}`}>
+                      {getStatusLabel(booking.status)}
                     </span>
                   </div>
 
                   <div className="booking-detail">
+                    <CalendarDays size={16} />
                     <span>{t("myBookings.date")}</span>
                     <strong>{formatDate(booking.scheduledAtUtc)}</strong>
                   </div>
 
                   <div className="booking-detail">
-                    <span>{t("myBookings.price")}</span>
-                    <strong>{formatPrice(booking.priceAtBooking)}</strong>
-                  </div>
-
-                  <div className="booking-detail">
+                    <MapPin size={16} />
                     <span>{t("myBookings.address")}</span>
                     <strong>{address}</strong>
                   </div>
 
                   {booking.notes && (
                     <div className="booking-detail">
+                      <FileText size={16} />
                       <span>{t("myBookings.notes")}</span>
                       <strong>{booking.notes}</strong>
                     </div>
@@ -192,3 +249,4 @@ export default function MyBookingsPage() {
     </section>
   );
 }
+

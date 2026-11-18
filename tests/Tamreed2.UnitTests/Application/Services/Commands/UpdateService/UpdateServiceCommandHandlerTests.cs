@@ -1,4 +1,3 @@
-﻿
 using Moq;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Application.Services.Commands.UpdateService;
@@ -9,145 +8,86 @@ namespace Tamreed2.UnitTests.Application.Services.Commands.UpdateService;
 
 public class UpdateServiceCommandHandlerTests
 {
-    private readonly Mock<IServiceRepository> _serviceRepositoryMock;
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IServiceRepository> _repository = new();
+    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly UpdateServiceCommandHandler _handler;
 
     public UpdateServiceCommandHandlerTests()
     {
-        _serviceRepositoryMock = new Mock<IServiceRepository>();
-        _unitOfWorkMock = new Mock<IUnitOfWork>();
-
         _handler = new UpdateServiceCommandHandler(
-            _serviceRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _repository.Object, _unitOfWork.Object);
     }
 
-    [Fact]
-    public async Task Handle_WithExistingService_ShouldUpdateServiceAndSaveChanges()
-    {
-        // Arrange
-        var service = Service.Create(
-            "Home Nursing",
-            "Old description",
-            500m);
+    private static Service CreateService() =>
+        Service.Create("Home Nursing", "Nursing", "Old description",
+            new[] { "Old point" }, "??????? ???????",
+            "?????", "??? ????", new[] { "???? ?????" });
 
-        var serviceId = service.Id;
-
-        var command = new UpdateServiceCommand(
-            serviceId,
-            "Physiotherapy at Home",
+    private static UpdateServiceCommand UpdateCommand(Guid id) =>
+        new(id, "Physiotherapy at Home", "Physiotherapy",
             "Professional physiotherapy services.",
-            750m);
+            new[] { "New point" }, "?????? ??????? ???????",
+            "???? ?????", "????? ???? ?????",
+            new[] { "???? ?????" });
 
-        _serviceRepositoryMock
-            .Setup(repository => repository.GetByIdForUpdateAsync(
-                serviceId,
-                It.IsAny<CancellationToken>()))
+    [Fact]
+    public async Task Handle_WithExistingService_ShouldUpdateAndSave()
+    {
+        var service = CreateService();
+        var command = UpdateCommand(service.Id);
+
+        _repository.Setup(x => x.GetByIdForUpdateAsync(
+            service.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(service);
 
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+        _unitOfWork.Setup(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-        // Act
-        var result = await _handler.Handle(
-            command,
-            CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
-        // Assert
         Assert.Equal(service.Id, result);
-        Assert.Equal("Physiotherapy at Home", service.Name);
-        Assert.Equal(
-            "Professional physiotherapy services.",
-            service.Description);
-        Assert.Equal(750m, service.Price);
+        Assert.Equal("Physiotherapy at Home", service.Title);
+        Assert.Equal("Physiotherapy", service.Name);
+        Assert.Equal("Professional physiotherapy services.", service.Description);
+        Assert.Equal("?????? ??????? ???????", service.TitleAr);
+        Assert.Equal(new[] { "New point" }, service.Points);
 
-        _serviceRepositoryMock.Verify(
-            repository => repository.GetByIdForUpdateAsync(
-                serviceId,
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        _unitOfWork.Verify(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithNonExistingService_ShouldThrowKeyNotFoundException()
+    public async Task Handle_WithNonExistingService_ShouldThrow()
     {
-        // Arrange
-        var serviceId = Guid.NewGuid();
+        var id = Guid.NewGuid();
 
-        var command = new UpdateServiceCommand(
-            serviceId,
-            "Physiotherapy at Home",
-            "Professional physiotherapy services.",
-            750m);
-
-        _serviceRepositoryMock
-            .Setup(repository => repository.GetByIdForUpdateAsync(
-                serviceId,
-                It.IsAny<CancellationToken>()))
+        _repository.Setup(x => x.GetByIdForUpdateAsync(
+            id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Service?)null);
 
-        // Act
         var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
-            () => _handler.Handle(
-                command,
-                CancellationToken.None));
+            () => _handler.Handle(UpdateCommand(id), CancellationToken.None));
 
-        // Assert
-        Assert.Contains(serviceId.ToString(), exception.Message);
-
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()),
-            Times.Never);
+        Assert.Contains(id.ToString(), exception.Message);
+        _unitOfWork.Verify(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task Handle_WithExistingService_ShouldReturnServiceId()
     {
-        // Arrange
-        var service = Service.Create(
-            "Home Nursing",
-            "Professional nursing at home.",
-            500m);
+        var service = CreateService();
 
-        var serviceId = service.Id;
-
-        var command = new UpdateServiceCommand(
-            serviceId,
-            "Home Nursing",
-            "Updated nursing description.",
-            600m);
-
-        _serviceRepositoryMock
-            .Setup(repository => repository.GetByIdForUpdateAsync(
-                serviceId,
-                It.IsAny<CancellationToken>()))
+        _repository.Setup(x => x.GetByIdForUpdateAsync(
+            service.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(service);
 
-        _unitOfWorkMock
-            .Setup(unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(1);
+        _unitOfWork.Setup(x => x.SaveChangesAsync(
+            It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-        // Act
         var result = await _handler.Handle(
-            command,
-            CancellationToken.None);
+            UpdateCommand(service.Id), CancellationToken.None);
 
-        // Assert
-        Assert.Equal(serviceId, result);
-
-        _unitOfWorkMock.Verify(
-            unitOfWork => unitOfWork.SaveChangesAsync(
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        Assert.Equal(service.Id, result);
     }
 }

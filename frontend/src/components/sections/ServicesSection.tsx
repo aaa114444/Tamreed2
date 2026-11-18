@@ -22,17 +22,26 @@ export default function ServicesSection() {
 
     async function loadServices() {
       try {
+        console.log("Loading services from API...");
+
         const response = await getServices();
 
+        console.log("Services API response:", response);
+
         if (isMounted) {
-          setServices(
-            response.filter(
-              (service) => service.status.toLowerCase() === "active"
-            )
+          const activeServices = response.filter(
+            (service) =>
+              service.status?.toLowerCase() === "active"
           );
+
+          console.log("Active services:", activeServices);
+
+          setServices(activeServices);
           setError(false);
         }
-      } catch {
+      } catch (error) {
+        console.error("Failed to load services:", error);
+
         if (isMounted) {
           setError(true);
         }
@@ -49,6 +58,20 @@ export default function ServicesSection() {
       isMounted = false;
     };
   }, []);
+
+  const getServiceImage = (name: string) => {
+    const normalizedName = name.toLowerCase();
+
+    if (normalizedName.includes("physio")) {
+      return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85";
+    }
+
+    if (normalizedName.includes("nursing")) {
+      return "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1000&q=85";
+    }
+
+    return "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1000&q=85";
+  };
 
   return (
     <section className="section services-section" id="services">
@@ -89,20 +112,50 @@ export default function ServicesSection() {
         {!loading && !error && services.length > 0 && (
           <div className="services-grid">
             {services.map((service, index) => {
+              const normalizedName = service.name.toLowerCase();
+
               const presentation =
-                serviceDefinitions.find((definition) =>
-                  service.name.toLowerCase().includes("physio")
-                    ? definition.titleKey === "services.physio.title"
-                    : definition.titleKey === "services.home.title"
-                ) ?? serviceDefinitions[index % serviceDefinitions.length];
+                serviceDefinitions.find((definition) => {
+                  if (definition.titleKey === "services.physio.title") {
+                    return normalizedName.includes("physio");
+                  }
+
+                  if (definition.titleKey === "services.home.title") {
+                    return (
+                      normalizedName.includes("nursing") ||
+                      normalizedName.includes("home")
+                    );
+                  }
+
+                  if (definition.titleKey === "services.medical.title") {
+                    return (
+                      normalizedName.includes("medical") ||
+                      normalizedName.includes("personalized")
+                    );
+                  }
+
+                  return false;
+                }) ?? serviceDefinitions[index % serviceDefinitions.length];
 
               const Icon = presentation.icon;
 
               return (
                 <article className="service-card" key={service.id}>
+                  <div className="service-card-image">
+                    <img
+                      src={getServiceImage(service.name)}
+                      alt={service.name}
+                      loading="lazy"
+                    />
+                    <span className="service-image-overlay" />
+                    <span className="service-image-label">
+                      {isArabic ? "رعاية تصل إليك" : "CARE THAT COMES HOME"}
+                    </span>
+                  </div>
+
                   <div className="service-card-top">
                     <div className={`service-icon ${presentation.color}`}>
-                      <Icon size={27} strokeWidth={1.7} />
+                      <Icon size={25} strokeWidth={1.7} />
                     </div>
 
                     <span className="service-number">
@@ -110,22 +163,14 @@ export default function ServicesSection() {
                     </span>
                   </div>
 
-                  <h3>{service.name}</h3>
-                  <p>{service.description}</p>
-
-                  <p className="service-price">
-                    {new Intl.NumberFormat(isArabic ? "ar-EG" : "en-EG", {
-                      style: "currency",
-                      currency: "EGP",
-                      maximumFractionDigits: 0,
-                    }).format(service.price)}
-                  </p>
+                  <h3>{t(presentation.titleKey)}</h3>
+                  <p>{t(presentation.descriptionKey)}</p>
 
                   <Link
-                    to={`/booking?serviceId=${encodeURIComponent(service.id)}`}
+                    to={`/services/${service.id}`}
                     className="service-link"
                   >
-                    {t("booking.title")}
+                    {isArabic ? "اعرف المزيد" : "Learn More"}
                     <Arrow size={17} />
                   </Link>
                 </article>

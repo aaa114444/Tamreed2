@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using Tamreed2.Application.Common.Exceptions;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Domain.Bookings;
@@ -77,7 +77,6 @@ public sealed class CreateBookingCommandHandler
             request.ServiceId,
             request.ScheduledAtUtc,
             address,
-            service.Price,
             request.Notes);
 
         await _bookingRepository.AddAsync(
@@ -89,3 +88,4 @@ public sealed class CreateBookingCommandHandler
         return booking.Id;
     }
 }
+

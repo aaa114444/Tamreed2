@@ -1,112 +1,120 @@
-﻿
-using Tamreed2.Domain.Common.Exceptions;
+﻿using Tamreed2.Domain.Common.Exceptions;
 using Tamreed2.Domain.Common.Models;
 
 namespace Tamreed2.Domain.Services;
 
 public sealed class Service : AggregateRoot
 {
+    public string Title { get; private set; } = null!;
     public string Name { get; private set; } = null!;
-
     public string Description { get; private set; } = null!;
+    public List<string> Points { get; private set; } = new();
 
-    public decimal Price { get; private set; }
+    public string TitleAr { get; private set; } = null!;
+    public string NameAr { get; private set; } = null!;
+    public string DescriptionAr { get; private set; } = null!;
+    public List<string> PointsAr { get; private set; } = new();
 
     public ServiceStatus Status { get; private set; }
-
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
-    private Service()
-    {
-    }
+    private Service() { }
 
     private Service(
+        string title,
         string name,
         string description,
-        decimal price)
+        IEnumerable<string>? points,
+        string titleAr,
+        string nameAr,
+        string descriptionAr,
+        IEnumerable<string>? pointsAr)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Service name is required.");
-
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException("Service description is required.");
-
-        if (price <= 0)
-            throw new DomainException(
-                "Service price must be greater than zero.");
-
-        Name = name.Trim();
-        Description = description.Trim();
-        Price = price;
+        UpdateDetails(
+            title, name, description, points,
+            titleAr, nameAr, descriptionAr, pointsAr);
 
         Status = ServiceStatus.Active;
         CreatedAtUtc = DateTimeOffset.UtcNow;
     }
 
     public static Service Create(
+        string title,
         string name,
         string description,
-        decimal price)
+        IEnumerable<string>? points,
+        string titleAr,
+        string nameAr,
+        string descriptionAr,
+        IEnumerable<string>? pointsAr)
     {
-        return new Service(name, description, price);
+        return new Service(
+            title, name, description, points,
+            titleAr, nameAr, descriptionAr, pointsAr);
     }
 
-    public void UpdatePrice(decimal newPrice)
-    {
-        if (newPrice <= 0)
-            throw new DomainException(
-                "Service price must be greater than zero.");
-
-        Price = newPrice;
-    }
-
-    public void UpdateDescription(string description)
-    {
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException(
-                "Service description is required.");
-
-        Description = description.Trim();
-    }
-
-    // Update name, description, and price together.
     public void UpdateDetails(
+        string title,
         string name,
         string description,
-        decimal price)
+        IEnumerable<string>? points,
+        string titleAr,
+        string nameAr,
+        string descriptionAr,
+        IEnumerable<string>? pointsAr)
     {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new DomainException("Service title is required.");
+
         if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException(
-                "Service name is required.");
+            throw new DomainException("Service name is required.");
 
         if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException(
-                "Service description is required.");
+            throw new DomainException("Service description is required.");
 
-        if (price <= 0)
-            throw new DomainException(
-                "Service price must be greater than zero.");
+        if (string.IsNullOrWhiteSpace(titleAr))
+            throw new DomainException("Arabic service title is required.");
 
+        if (string.IsNullOrWhiteSpace(nameAr))
+            throw new DomainException("Arabic service name is required.");
+
+        if (string.IsNullOrWhiteSpace(descriptionAr))
+            throw new DomainException("Arabic service description is required.");
+
+        Title = title.Trim();
         Name = name.Trim();
         Description = description.Trim();
-        Price = price;
+        Points = NormalizePoints(points);
+
+        TitleAr = titleAr.Trim();
+        NameAr = nameAr.Trim();
+        DescriptionAr = descriptionAr.Trim();
+        PointsAr = NormalizePoints(pointsAr);
+    }
+
+    private static List<string> NormalizePoints(IEnumerable<string>? points)
+    {
+        var normalized = (points ?? Enumerable.Empty<string>())
+            .Select(point => point?.Trim() ?? string.Empty)
+            .Where(point => !string.IsNullOrWhiteSpace(point))
+            .ToList();
+
+        if (normalized.Count > 20)
+            throw new DomainException("A service cannot have more than 20 points.");
+
+        if (normalized.Any(point => point.Length > 200))
+            throw new DomainException("Each service point cannot exceed 200 characters.");
+
+        return normalized;
     }
 
     public void Deactivate()
     {
-        if (Status == ServiceStatus.Inactive)
-            throw new DomainException(
-                "Service is already inactive.");
-
         Status = ServiceStatus.Inactive;
     }
 
     public void Reactivate()
     {
-        if (Status == ServiceStatus.Active)
-            throw new DomainException(
-                "Service is already active.");
-
         Status = ServiceStatus.Active;
     }
 }

@@ -9,8 +9,7 @@ public sealed class GetServiceByIdQueryHandler
 {
     private readonly IServiceRepository _serviceRepository;
 
-    public GetServiceByIdQueryHandler(
-        IServiceRepository serviceRepository)
+    public GetServiceByIdQueryHandler(IServiceRepository serviceRepository)
     {
         _serviceRepository = serviceRepository;
     }
@@ -24,15 +23,18 @@ public sealed class GetServiceByIdQueryHandler
             cancellationToken);
 
         if (service is null)
-        {
             return null;
-        }
 
         return new ServiceResponse(
             service.Id,
+            service.Title,
             service.Name,
             service.Description,
-            service.Price,
+            service.Points,
+            service.TitleAr,
+            service.NameAr,
+            service.DescriptionAr,
+            service.PointsAr,
             service.Status.ToString(),
             service.CreatedAtUtc);
     }

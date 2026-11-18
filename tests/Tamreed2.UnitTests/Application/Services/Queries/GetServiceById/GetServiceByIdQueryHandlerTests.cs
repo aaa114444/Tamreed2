@@ -1,4 +1,3 @@
-
 using Moq;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Application.Services.Queries.GetServiceById;
@@ -9,45 +8,41 @@ namespace Tamreed2.UnitTests.Application.Services.Queries.GetServiceById;
 
 public class GetServiceByIdQueryHandlerTests
 {
-    private readonly Mock<IServiceRepository> _repositoryMock;
+    private readonly Mock<IServiceRepository> _repositoryMock = new();
     private readonly GetServiceByIdQueryHandler _handler;
 
     public GetServiceByIdQueryHandlerTests()
     {
-        _repositoryMock = new Mock<IServiceRepository>();
-
-        _handler = new GetServiceByIdQueryHandler(
-            _repositoryMock.Object);
+        _handler = new GetServiceByIdQueryHandler(_repositoryMock.Object);
     }
+
+    private static Service CreateService() =>
+        Service.Create(
+            "Home Nursing", "Home Nursing",
+            "Professional nursing services at home.", new[] { "Daily care" },
+            "??????? ???????", "??????? ???????",
+            "????? ??????? ???????? ???????", new[] { "????? ?????" });
 
     [Fact]
     public async Task Handle_WithExistingService_ShouldReturnServiceResponse()
     {
-        // Arrange
-        var service = Service.Create(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        var service = CreateService();
+        _repositoryMock.Setup(r => r.GetByIdAsync(
+            service.Id, It.IsAny<CancellationToken>())).ReturnsAsync(service);
 
-        var query = new GetServiceByIdQuery(service.Id);
-
-        _repositoryMock
-            .Setup(repository => repository.GetByIdAsync(
-                service.Id,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(service);
-
-        // Act
         var result = await _handler.Handle(
-            query,
-            CancellationToken.None);
+            new GetServiceByIdQuery(service.Id), CancellationToken.None);
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(service.Id, result.Id);
+        Assert.Equal(service.Title, result.Title);
         Assert.Equal(service.Name, result.Name);
         Assert.Equal(service.Description, result.Description);
-        Assert.Equal(service.Price, result.Price);
+        Assert.Equal(service.Points, result.Points);
+        Assert.Equal(service.TitleAr, result.TitleAr);
+        Assert.Equal(service.NameAr, result.NameAr);
+        Assert.Equal(service.DescriptionAr, result.DescriptionAr);
+        Assert.Equal(service.PointsAr, result.PointsAr);
         Assert.Equal(service.Status.ToString(), result.Status);
         Assert.Equal(service.CreatedAtUtc, result.CreatedAtUtc);
     }
@@ -55,83 +50,43 @@ public class GetServiceByIdQueryHandlerTests
     [Fact]
     public async Task Handle_WithNonExistingService_ShouldReturnNull()
     {
-        // Arrange
-        var serviceId = Guid.NewGuid();
-        var query = new GetServiceByIdQuery(serviceId);
+        var id = Guid.NewGuid();
+        _repositoryMock.Setup(r => r.GetByIdAsync(
+            id, It.IsAny<CancellationToken>())).ReturnsAsync((Service?)null);
 
-        _repositoryMock
-            .Setup(repository => repository.GetByIdAsync(
-                serviceId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Service?)null);
-
-        // Act
         var result = await _handler.Handle(
-            query,
-            CancellationToken.None);
+            new GetServiceByIdQuery(id), CancellationToken.None);
 
-        // Assert
         Assert.Null(result);
     }
 
     [Fact]
     public async Task Handle_ShouldCallRepositoryWithRequestedServiceId()
     {
-        // Arrange
-        var service = Service.Create(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        var service = CreateService();
+        _repositoryMock.Setup(r => r.GetByIdAsync(
+            service.Id, It.IsAny<CancellationToken>())).ReturnsAsync(service);
 
-        var query = new GetServiceByIdQuery(service.Id);
+        await _handler.Handle(
+            new GetServiceByIdQuery(service.Id), CancellationToken.None);
 
-        _repositoryMock
-            .Setup(repository => repository.GetByIdAsync(
-                service.Id,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(service);
-
-        // Act
-        await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        _repositoryMock.Verify(
-            repository => repository.GetByIdAsync(
-                service.Id,
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        _repositoryMock.Verify(r => r.GetByIdAsync(
+            service.Id, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldPassCancellationTokenToRepository()
     {
-        // Arrange
-        var service = Service.Create(
-            "Home Nursing",
-            "Professional nursing services at home.",
-            500m);
+        var service = CreateService();
+        using var cts = new CancellationTokenSource();
 
-        var query = new GetServiceByIdQuery(service.Id);
+        _repositoryMock.Setup(r => r.GetByIdAsync(
+            service.Id, cts.Token)).ReturnsAsync(service);
 
-        using var cancellationTokenSource =
-            new CancellationTokenSource();
+        await _handler.Handle(
+            new GetServiceByIdQuery(service.Id), cts.Token);
 
-        var cancellationToken = cancellationTokenSource.Token;
-
-        _repositoryMock
-            .Setup(repository => repository.GetByIdAsync(
-                service.Id,
-                cancellationToken))
-            .ReturnsAsync(service);
-
-        // Act
-        await _handler.Handle(query, cancellationToken);
-
-        // Assert
-        _repositoryMock.Verify(
-            repository => repository.GetByIdAsync(
-                service.Id,
-                cancellationToken),
-            Times.Once);
+        _repositoryMock.Verify(r => r.GetByIdAsync(
+            service.Id, cts.Token), Times.Once);
     }
 }
