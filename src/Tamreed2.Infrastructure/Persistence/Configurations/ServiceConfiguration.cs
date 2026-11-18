@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -49,8 +49,10 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
         property
             .HasConversion(
                 points => JsonSerializer.Serialize(points, (JsonSerializerOptions?)null),
-                json => JsonSerializer.Deserialize<List<string>>(json, (JsonSerializerOptions?)null)
-                    ?? new List<string>())
+                json => string.IsNullOrWhiteSpace(json)
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(json, (JsonSerializerOptions?)null)
+                        ?? new List<string>())
             .HasColumnType("nvarchar(max)")
             .IsRequired();
 
@@ -61,3 +63,4 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
                 points => points.ToList()));
     }
 }
+
