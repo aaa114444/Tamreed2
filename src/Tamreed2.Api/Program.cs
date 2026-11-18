@@ -1,5 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Tamreed2.Infrastructure.Persistence;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Tamreed2.Application;
@@ -146,6 +148,17 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<Tamreed2DbContext>();
+
+    if (dbContext.Database.IsRelational())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+}
+
 // Centralized exception handling
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -172,3 +185,5 @@ app.MapFallbackToFile("index.html");
 app.Run();
 
 public partial class Program { }
+
+
