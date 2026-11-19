@@ -25,8 +25,14 @@ public class CreateServiceCommandValidatorTests
     [InlineData("   ")]
     public void Validate_WithInvalidTitle_ShouldFail(string? title)
     {
-        var command = ValidCommand() with { Title = title! };
+        var command = ValidCommand() with { Title = title!, TitleAr = null! };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
+    }
+    [Fact]
+    public void Validate_WithArabicOnlyTitle_ShouldPass()
+    {
+        var command = ValidCommand() with { Title = null! };
+        Assert.True(_validator.Validate(command).IsValid);
     }
 }

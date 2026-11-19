@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tamreed2.Application.Services.Commands.CreateService;
+using Tamreed2.Application.Services.Commands.DeleteService;
 using Tamreed2.Application.Services.Commands.UpdateService;
 using Tamreed2.Application.Services.Queries.GetAllServices;
 using Tamreed2.Application.Services.Queries.GetServiceById;
@@ -160,6 +161,23 @@ public class ServicesController : ControllerBase
             Id = serviceId,
             Message = "Service updated successfully."
         });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeleteService(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(
+            new DeleteServiceCommand(id),
+            cancellationToken);
+
+        return NoContent();
     }
 }
 

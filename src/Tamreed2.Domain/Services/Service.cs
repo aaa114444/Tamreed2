@@ -67,32 +67,22 @@ public sealed class Service : AggregateRoot
         IEnumerable<string>? pointsAr,
         ServiceDetailsContent? details = null)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new DomainException("Service title is required.");
+        if (string.IsNullOrWhiteSpace(title) && string.IsNullOrWhiteSpace(titleAr))
+            throw new DomainException("Service title is required in at least one language.");
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Service name is required.");
+        if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(nameAr))
+            throw new DomainException("Service name is required in at least one language.");
 
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException("Service description is required.");
-
-        if (string.IsNullOrWhiteSpace(titleAr))
-            throw new DomainException("Arabic service title is required.");
-
-        if (string.IsNullOrWhiteSpace(nameAr))
-            throw new DomainException("Arabic service name is required.");
-
-        if (string.IsNullOrWhiteSpace(descriptionAr))
-            throw new DomainException("Arabic service description is required.");
-
-        Title = title.Trim();
-        Name = name.Trim();
-        Description = description.Trim();
+        if (string.IsNullOrWhiteSpace(description) && string.IsNullOrWhiteSpace(descriptionAr))
+            throw new DomainException("Service description is required in at least one language.");
+Title = (title ?? string.Empty).Trim();
+        Name = (name ?? string.Empty).Trim();
+        Description = (description ?? string.Empty).Trim();
         Points = NormalizePoints(points);
 
-        TitleAr = titleAr.Trim();
-        NameAr = nameAr.Trim();
-        DescriptionAr = descriptionAr.Trim();
+        TitleAr = (titleAr ?? string.Empty).Trim();
+        NameAr = (nameAr ?? string.Empty).Trim();
+        DescriptionAr = (descriptionAr ?? string.Empty).Trim();
         PointsAr = NormalizePoints(pointsAr);
         Details = details ?? new ServiceDetailsContent();
     }

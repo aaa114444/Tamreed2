@@ -33,9 +33,19 @@ public class ServiceTests
     {
         Assert.Throws<DomainException>(() =>
             Service.Create("Title", name!, "Description", null,
-                "?????", "???", "???", null));
+                "?????", null!, "???", null));
     }
 
+    [Fact]
+    public void Create_WithMissingEnglishNameAndValidArabicName_ShouldPass()
+    {
+        var service = Service.Create(
+            "Title", null!, "Description", null,
+            "?????", "اسم الخدمة", "وصف الخدمة", null);
+
+        Assert.Equal(string.Empty, service.Name);
+        Assert.Equal("اسم الخدمة", service.NameAr);
+    }
     [Fact]
     public void Create_ShouldTrimContent()
     {
@@ -73,7 +83,7 @@ public class ServiceTests
         Assert.Throws<DomainException>(() =>
             Service.Create("Title", "Name", "Description",
                 Enumerable.Repeat("Point", 21),
-                "?????", "???", "???", null));
+                "?????", null!, "???", null));
     }
 
     [Fact]

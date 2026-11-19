@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Domain.Services;
@@ -43,6 +43,7 @@ public sealed class ServiceRepository : IServiceRepository
     {
         return await _dbContext.Services
             .AsNoTracking()
+            .Where(service => service.Status == ServiceStatus.Active)
             .OrderBy(service => service.Name)
             .ToListAsync(cancellationToken);
     }

@@ -777,19 +777,19 @@ export default function AdminDashboardPage() {
       </button>
     </div>
 
-    <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â¹Ã™â€žÃ™Ë†Ã™â€¦Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â£Ã˜Â³Ã˜Â§Ã˜Â³Ã™Å Ã˜Â©" : "Basic Information"}</h3>
+    <h3>{isArabic ? "المعلومات الأساسية" : "Basic Information"}</h3>
     <div className="admin-details-grid">
-      <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€ " : "Title"}
+      <label>{isArabic ? "العنوان" : "Title"}
         <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.titleAr : serviceForm.title}
           onChange={(event) => isArabic ? updateServiceField("titleAr", event.target.value) : updateServiceField("title", event.target.value)}
           maxLength={200} />
       </label>
-      <label>{isArabic ? "Ã˜Â§Ã˜Â³Ã™â€¦ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "Service name"}
+      <label>{isArabic ? "اسم الخدمة" : "Service name"}
         <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.nameAr : serviceForm.name}
           onChange={(event) => isArabic ? updateServiceField("nameAr", event.target.value) : updateServiceField("name", event.target.value)}
           maxLength={150} />
       </label>
-      <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+      <label>{isArabic ? "الوصف" : "Description"}
         <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.descriptionAr : serviceForm.description}
           onChange={(event) => isArabic ? updateServiceField("descriptionAr", event.target.value) : updateServiceField("description", event.target.value)}
           maxLength={1000} rows={3} />
@@ -797,7 +797,7 @@ export default function AdminDashboardPage() {
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€ Ã™â€šÃ˜Â§Ã˜Â· Ã˜Â§Ã™â€žÃ˜Â±Ã˜Â¦Ã™Å Ã˜Â³Ã™Å Ã˜Â©" : "Highlights"}</h3>
+      <h3>{isArabic ? "النقاط الرئيسية" : "Highlights"}</h3>
       <div className="admin-points-field">
         {(isArabic ? serviceForm.pointsAr : serviceForm.points).map((point, index) => (
           <div className="admin-dynamic-row" key={`point-${isArabic ? "ar" : "en"}-${index}`}>
@@ -815,18 +815,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateServiceField("pointsAr", [...serviceForm.pointsAr, ""]);
           else updateServiceField("points", [...serviceForm.points, ""]);
-        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã™â€ Ã™â€šÃ˜Â·Ã˜Â©" : "+ Add point"}</button>
+        }}>{isArabic ? "+ إضافة نقطة" : "+ Add point"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã˜Â¹Ã™â€  Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "About This Service"}</h3>
+      <h3>{isArabic ? "عن الخدمة" : "About This Service"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.aboutTitleAr : serviceForm.details.aboutTitle}
             onChange={(event) => isArabic ? updateDetailsField("aboutTitleAr", event.target.value) : updateDetailsField("aboutTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â­Ã˜ÂªÃ™Ë†Ã™â€°" : "Content"}
+        <label>{isArabic ? "المحتوى" : "Content"}
           <textarea dir={isArabic ? "rtl" : "ltr"} rows={4}
             value={isArabic ? serviceForm.details.aboutTextAr : serviceForm.details.aboutText}
             onChange={(event) => isArabic ? updateDetailsField("aboutTextAr", event.target.value) : updateDetailsField("aboutText", event.target.value)} />
@@ -835,13 +835,13 @@ export default function AdminDashboardPage() {
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã™â€žÃ™â€¦Ã™â€  Ã™â€¡Ã˜Â°Ã™â€¡ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©Ã˜Å¸" : "Who Is This For?"}</h3>
+      <h3>{isArabic ? "لمن هذه الخدمة؟" : "Who Is This For?"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.audienceTitleAr : serviceForm.details.audienceTitle}
             onChange={(event) => isArabic ? updateDetailsField("audienceTitleAr", event.target.value) : updateDetailsField("audienceTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+        <label>{isArabic ? "الوصف" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.audienceDescriptionAr : serviceForm.details.audienceDescription}
             onChange={(event) => isArabic ? updateDetailsField("audienceDescriptionAr", event.target.value) : updateDetailsField("audienceDescription", event.target.value)} />
@@ -861,18 +861,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateDetailsField("audienceItemsAr", [...serviceForm.details.audienceItemsAr, ""]);
           else updateDetailsField("audienceItems", [...serviceForm.details.audienceItems, ""]);
-        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â¹Ã™â€ Ã˜ÂµÃ˜Â±" : "+ Add item"}</button>
+        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã™â€¦Ã˜Â§Ã˜Â°Ã˜Â§ Ã˜ÂªÃ˜Â´Ã™â€¦Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©Ã˜Å¸" : "What's Included"}</h3>
+      <h3>{isArabic ? "ماذا تشمل الخدمة؟" : "What's Included"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.includedTitleAr : serviceForm.details.includedTitle}
             onChange={(event) => isArabic ? updateDetailsField("includedTitleAr", event.target.value) : updateDetailsField("includedTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+        <label>{isArabic ? "الوصف" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.includedDescriptionAr : serviceForm.details.includedDescription}
             onChange={(event) => isArabic ? updateDetailsField("includedDescriptionAr", event.target.value) : updateDetailsField("includedDescription", event.target.value)} />
@@ -892,18 +892,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateDetailsField("includedItemsAr", [...serviceForm.details.includedItemsAr, ""]);
           else updateDetailsField("includedItems", [...serviceForm.details.includedItems, ""]);
-        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â¹Ã™â€ Ã˜ÂµÃ˜Â±" : "+ Add item"}</button>
+        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã˜Â®Ã˜Â·Ã™Ë†Ã˜Â§Ã˜Âª Ã˜ÂªÃ™â€šÃ˜Â¯Ã™Å Ã™â€¦ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "How It Works"}</h3>
+      <h3>{isArabic ? "خطوات تقديم الخدمة" : "How It Works"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.processTitleAr : serviceForm.details.processTitle}
             onChange={(event) => isArabic ? updateDetailsField("processTitleAr", event.target.value) : updateDetailsField("processTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+        <label>{isArabic ? "الوصف" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.processDescriptionAr : serviceForm.details.processDescription}
             onChange={(event) => isArabic ? updateDetailsField("processDescriptionAr", event.target.value) : updateDetailsField("processDescription", event.target.value)} />
@@ -912,15 +912,15 @@ export default function AdminDashboardPage() {
       {serviceForm.details.steps.map((step, index) => (
         <div className="admin-nested-editor" key={`step-${index}`}>
           <div className="admin-panel-heading">
-            <strong>{isArabic ? `Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â·Ã™Ë†Ã˜Â© ${index + 1}` : `Step ${index + 1}`}</strong>
+            <strong>{isArabic ? `الخطوة ` : `Step ${index + 1}`}</strong>
             <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("steps", serviceForm.details.steps.filter((_, i) => i !== index))}><X size={16} /></button>
           </div>
           <div className="admin-details-grid">
-            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€ " : "Title"}
+            <label>{isArabic ? "العنوان" : "Title"}
               <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.titleAr : step.title}
                 onChange={(event) => isArabic ? updateStep(index, "titleAr", event.target.value) : updateStep(index, "title", event.target.value)} />
             </label>
-            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+            <label>{isArabic ? "الوصف" : "Description"}
               <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.descriptionAr : step.description}
                 onChange={(event) => isArabic ? updateStep(index, "descriptionAr", event.target.value) : updateStep(index, "description", event.target.value)} />
             </label>
@@ -928,18 +928,18 @@ export default function AdminDashboardPage() {
         </div>
       ))}
       <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("steps", [...serviceForm.details.steps, { title: "", description: "", titleAr: "", descriptionAr: "" }])}>
-        {isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â®Ã˜Â·Ã™Ë†Ã˜Â©" : "+ Add step"}
+        {isArabic ? "+ إضافة خطوة" : "+ Add step"}
       </button>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â£Ã˜Â³Ã˜Â¦Ã™â€žÃ˜Â© Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â§Ã˜Â¦Ã˜Â¹Ã˜Â©" : "Frequently Asked Questions"}</h3>
+      <h3>{isArabic ? "الأسئلة الشائعة" : "Frequently Asked Questions"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.faqTitleAr : serviceForm.details.faqTitle}
             onChange={(event) => isArabic ? updateDetailsField("faqTitleAr", event.target.value) : updateDetailsField("faqTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
+        <label>{isArabic ? "الوصف" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.faqDescriptionAr : serviceForm.details.faqDescription}
             onChange={(event) => isArabic ? updateDetailsField("faqDescriptionAr", event.target.value) : updateDetailsField("faqDescription", event.target.value)} />
@@ -948,15 +948,15 @@ export default function AdminDashboardPage() {
       {serviceForm.details.faqs.map((faq, index) => (
         <div className="admin-nested-editor" key={`faq-${index}`}>
           <div className="admin-panel-heading">
-            <strong>{isArabic ? `Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž ${index + 1}` : `Question ${index + 1}`}</strong>
+            <strong>{isArabic ? `السؤال ` : `Question ${index + 1}`}</strong>
             <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("faqs", serviceForm.details.faqs.filter((_, i) => i !== index))}><X size={16} /></button>
           </div>
           <div className="admin-details-grid">
-            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž" : "Question"}
+            <label>{isArabic ? "السؤال" : "Question"}
               <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.questionAr : faq.question}
                 onChange={(event) => isArabic ? updateFaq(index, "questionAr", event.target.value) : updateFaq(index, "question", event.target.value)} />
             </label>
-            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â¬Ã˜Â§Ã˜Â¨Ã˜Â©" : "Answer"}
+            <label>{isArabic ? "الإجابة" : "Answer"}
               <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.answerAr : faq.answer}
                 onChange={(event) => isArabic ? updateFaq(index, "answerAr", event.target.value) : updateFaq(index, "answer", event.target.value)} />
             </label>
@@ -964,7 +964,7 @@ export default function AdminDashboardPage() {
         </div>
       ))}
       <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("faqs", [...serviceForm.details.faqs, { question: "", answer: "", questionAr: "", answerAr: "" }])}>
-        {isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž" : "+ Add FAQ"}
+        {isArabic ? "+ إضافة سؤال" : "+ Add FAQ"}
       </button>
     </div>
     <div className="admin-form-actions">

@@ -38,7 +38,13 @@ public class UpdateServiceCommandValidatorTests
     [InlineData("   ")]
     public void Validate_WithInvalidTitle_ShouldFail(string? title)
     {
-        var command = ValidCommand() with { Title = title! };
+        var command = ValidCommand() with { Title = title!, TitleAr = null! };
         Assert.False(_validator.Validate(command).IsValid);
+    }
+    [Fact]
+    public void Validate_WithArabicOnlyTitle_ShouldPass()
+    {
+        var command = ValidCommand() with { Title = null! };
+        Assert.True(_validator.Validate(command).IsValid);
     }
 }
