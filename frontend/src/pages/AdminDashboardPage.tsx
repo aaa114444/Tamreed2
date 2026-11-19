@@ -29,6 +29,7 @@ import {
 } from "../services/bookingService";
 import {
   createService,
+  deleteService,
   getServices,
   updateService,
   type SaveServiceRequest,
@@ -180,7 +181,7 @@ const translations = {
     confirmDeactivateCustomer: "هل أنت متأكد من إلغاء تفعيل حساب هذا العميل؟",
     registered: "تاريخ التسجيل",
     lastLogin: "آخر تسجيل دخول",
-    never: "لم يسجل الدخول",
+    never: "لم يسجل الدخول من قبل",
     customerCount: "العملاء المسجلون",
     bookingHistory: "سجل الحجوزات",
     viewHistory: "عرض سجل الحجوزات",
@@ -236,7 +237,7 @@ const translations = {
     noNotes: "لا توجد ملاحظات",
     bookingUpdated: "تم تحديث الحجز بنجاح.",
     confirmCancel: "هل أنت متأكد من إلغاء هذا الحجز؟",
-    required: "يرجى إكمال جميع الحقول.",
+    required: "يرجى إكمال الحقول المطلوبة.",
     createdAt: "تاريخ الإضافة",
     actionsUnavailable: "لا توجد إجراءات متاحة",
     serviceCount: "الخدمات النشطة",
@@ -330,7 +331,7 @@ export default function AdminDashboardPage() {
 
   function serviceName(id: string) {
     return services.find((service) => service.id === id)?.name ??
-      (isArabic ? "خدمة غير معروفة" : "Unknown service");
+      (isArabic ? "Ã˜Â®Ã˜Â¯Ã™â€¦Ã˜Â© Ã˜ÂºÃ™Å Ã˜Â± Ã™â€¦Ã˜Â¹Ã˜Â±Ã™Ë†Ã™ÂÃ˜Â©" : "Unknown service");
   }
 
   function dateLabel(value: string) {
@@ -497,10 +498,34 @@ export default function AdminDashboardPage() {
       )
     );
   }
+  async function handleDeleteService(service: ServiceResponse) {
+    const confirmed = window.confirm(
+      isArabic
+        ? `هل أنت متأكد من حذف خدمة "${service.nameAr || service.name}"؟`
+        : `Are you sure you want to delete "${service.name || service.nameAr}"?`
+    );
+
+    if (!confirmed) return;
+
+    setError("");
+    setNotice("");
+
+    try {
+      await deleteService(service.id);
+      setNotice(
+        isArabic
+          ? "تم حذف الخدمة بنجاح."
+          : "Service deleted successfully."
+      );
+      await loadDashboard(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.error);
+    }
+  }
   async function handleSaveService(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!serviceForm.title.trim() || !serviceForm.name.trim() || !serviceForm.description.trim()) { setError(t.required); return; }
+    if ((!serviceForm.title.trim() && !serviceForm.titleAr.trim()) || (!serviceForm.name.trim() && !serviceForm.nameAr.trim()) || (!serviceForm.description.trim() && !serviceForm.descriptionAr.trim())) { setError(t.required); return; }
     setError("");
     setNotice("");
 
@@ -572,7 +597,7 @@ export default function AdminDashboardPage() {
           <span><strong>CARE PLUS</strong><small>{t.dashboard}</small></span>
         </Link>
 
-        <div className="admin-sidebar-label">{isArabic ? "القائمة الرئيسية" : "MAIN MENU"}</div>
+        <div className="admin-sidebar-label">{isArabic ? "\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629" : "MAIN MENU"}</div>
 
         <nav className="admin-nav">
           <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>
@@ -607,7 +632,7 @@ export default function AdminDashboardPage() {
 
           <div className="admin-topbar-actions">
             <button className="admin-language-button" onClick={() => void i18n.changeLanguage(isArabic ? "en" : "ar")}>
-              {isArabic ? "English" : "العربية"}
+              {isArabic ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}
             </button>
             <div className="admin-user">
               <span>{auth?.firstName?.charAt(0)?.toUpperCase() ?? "A"}</span>
@@ -632,7 +657,7 @@ export default function AdminDashboardPage() {
                 <div className="admin-welcome">
                   <div>
                     <span>{t.welcome}, {auth?.firstName ?? "Admin"}</span>
-                    <h2>{isArabic ? "إليك ملخص نشاط تمريض" : "Here's your Care Plus activity at a glance."}</h2>
+                    <h2>{isArabic ? "\u0625\u0644\u064a\u0643 \u0645\u0644\u062e\u0635 \u0646\u0634\u0627\u0637 \u062a\u0645\u0631\u064a\u0636" : "Here's your Care Plus activity at a glance."}</h2>
                     <p>{t.subtitle}</p>
                   </div>
                   <div className="admin-welcome-mark"><Activity size={48} /></div>
@@ -673,7 +698,7 @@ export default function AdminDashboardPage() {
 
                 <section className="admin-panel">
                   <div className="admin-panel-heading">
-                    <div><span className="admin-eyebrow">LATEST ACTIVITY</span><h2>{t.recentBookings}</h2></div>
+                    <div><span className="admin-eyebrow">{isArabic ? "\u0622\u062e\u0631 \u0627\u0644\u0646\u0634\u0627\u0637" : "LATEST ACTIVITY"}</span><h2>{t.recentBookings}</h2></div>
                     <button className="admin-text-link" onClick={() => setActiveTab("bookings")}>{t.allBookings} <BackArrow size={15} /></button>
                   </div>
                   {bookings.length === 0 ? (
@@ -726,7 +751,7 @@ export default function AdminDashboardPage() {
                           <div><CalendarDays size={16} /><span>{dateLabel(booking.scheduledAtUtc)}</span></div>
                           <div><MapPin size={16} /><span>{[booking.street, booking.buildingNumber, booking.apartmentNumber, booking.district, booking.city].filter(Boolean).join(", ")}</span></div>
                           <div><span className="admin-info-label">{t.customer}</span><span className="admin-customer-id">{booking.customerId}</span></div>
-                          {booking.notes && <div className="admin-booking-notes"><span className="admin-info-label">{isArabic ? "ملاحظات" : "Notes"}</span><p>{booking.notes}</p></div>}
+                          {booking.notes && <div className="admin-booking-notes"><span className="admin-info-label">{isArabic ? "Ã™â€¦Ã™â€žÃ˜Â§Ã˜Â­Ã˜Â¸Ã˜Â§Ã˜Âª" : "Notes"}</span><p>{booking.notes}</p></div>}
                         </div>
                         <div className="admin-booking-actions">{bookingActions(booking)}</div>
                       </article>
@@ -752,27 +777,27 @@ export default function AdminDashboardPage() {
       </button>
     </div>
 
-    <h3>{isArabic ? "المعلومات الأساسية" : "Basic Information"}</h3>
+    <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â¹Ã™â€žÃ™Ë†Ã™â€¦Ã˜Â§Ã˜Âª Ã˜Â§Ã™â€žÃ˜Â£Ã˜Â³Ã˜Â§Ã˜Â³Ã™Å Ã˜Â©" : "Basic Information"}</h3>
     <div className="admin-details-grid">
-      <label>{isArabic ? "العنوان" : "Title"}
+      <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€ " : "Title"}
         <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.titleAr : serviceForm.title}
           onChange={(event) => isArabic ? updateServiceField("titleAr", event.target.value) : updateServiceField("title", event.target.value)}
-          required={!isArabic} maxLength={200} />
+          maxLength={200} />
       </label>
-      <label>{isArabic ? "اسم الخدمة" : "Service name"}
+      <label>{isArabic ? "Ã˜Â§Ã˜Â³Ã™â€¦ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "Service name"}
         <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.nameAr : serviceForm.name}
           onChange={(event) => isArabic ? updateServiceField("nameAr", event.target.value) : updateServiceField("name", event.target.value)}
-          required={!isArabic} maxLength={150} />
+          maxLength={150} />
       </label>
-      <label>{isArabic ? "الوصف" : "Description"}
+      <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
         <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.descriptionAr : serviceForm.description}
           onChange={(event) => isArabic ? updateServiceField("descriptionAr", event.target.value) : updateServiceField("description", event.target.value)}
-          required={!isArabic} maxLength={1000} rows={3} />
+          maxLength={1000} rows={3} />
       </label>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "النقاط الرئيسية" : "Highlights"}</h3>
+      <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€ Ã™â€šÃ˜Â§Ã˜Â· Ã˜Â§Ã™â€žÃ˜Â±Ã˜Â¦Ã™Å Ã˜Â³Ã™Å Ã˜Â©" : "Highlights"}</h3>
       <div className="admin-points-field">
         {(isArabic ? serviceForm.pointsAr : serviceForm.points).map((point, index) => (
           <div className="admin-dynamic-row" key={`point-${isArabic ? "ar" : "en"}-${index}`}>
@@ -790,18 +815,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateServiceField("pointsAr", [...serviceForm.pointsAr, ""]);
           else updateServiceField("points", [...serviceForm.points, ""]);
-        }}>{isArabic ? "+ إضافة نقطة" : "+ Add point"}</button>
+        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã™â€ Ã™â€šÃ˜Â·Ã˜Â©" : "+ Add point"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "عن الخدمة" : "About This Service"}</h3>
+      <h3>{isArabic ? "Ã˜Â¹Ã™â€  Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "About This Service"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "عنوان القسم" : "Section title"}
+        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.aboutTitleAr : serviceForm.details.aboutTitle}
             onChange={(event) => isArabic ? updateDetailsField("aboutTitleAr", event.target.value) : updateDetailsField("aboutTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "المحتوى" : "Content"}
+        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™â€¦Ã˜Â­Ã˜ÂªÃ™Ë†Ã™â€°" : "Content"}
           <textarea dir={isArabic ? "rtl" : "ltr"} rows={4}
             value={isArabic ? serviceForm.details.aboutTextAr : serviceForm.details.aboutText}
             onChange={(event) => isArabic ? updateDetailsField("aboutTextAr", event.target.value) : updateDetailsField("aboutText", event.target.value)} />
@@ -810,13 +835,13 @@ export default function AdminDashboardPage() {
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "لمن هذه الخدمة؟" : "Who Is This For?"}</h3>
+      <h3>{isArabic ? "Ã™â€žÃ™â€¦Ã™â€  Ã™â€¡Ã˜Â°Ã™â€¡ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©Ã˜Å¸" : "Who Is This For?"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "عنوان القسم" : "Section title"}
+        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.audienceTitleAr : serviceForm.details.audienceTitle}
             onChange={(event) => isArabic ? updateDetailsField("audienceTitleAr", event.target.value) : updateDetailsField("audienceTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "الوصف" : "Description"}
+        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.audienceDescriptionAr : serviceForm.details.audienceDescription}
             onChange={(event) => isArabic ? updateDetailsField("audienceDescriptionAr", event.target.value) : updateDetailsField("audienceDescription", event.target.value)} />
@@ -836,18 +861,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateDetailsField("audienceItemsAr", [...serviceForm.details.audienceItemsAr, ""]);
           else updateDetailsField("audienceItems", [...serviceForm.details.audienceItems, ""]);
-        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
+        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â¹Ã™â€ Ã˜ÂµÃ˜Â±" : "+ Add item"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "ماذا تشمل الخدمة؟" : "What's Included"}</h3>
+      <h3>{isArabic ? "Ã™â€¦Ã˜Â§Ã˜Â°Ã˜Â§ Ã˜ÂªÃ˜Â´Ã™â€¦Ã™â€ž Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©Ã˜Å¸" : "What's Included"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "عنوان القسم" : "Section title"}
+        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.includedTitleAr : serviceForm.details.includedTitle}
             onChange={(event) => isArabic ? updateDetailsField("includedTitleAr", event.target.value) : updateDetailsField("includedTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "الوصف" : "Description"}
+        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.includedDescriptionAr : serviceForm.details.includedDescription}
             onChange={(event) => isArabic ? updateDetailsField("includedDescriptionAr", event.target.value) : updateDetailsField("includedDescription", event.target.value)} />
@@ -867,18 +892,18 @@ export default function AdminDashboardPage() {
         <button type="button" className="admin-secondary-button" onClick={() => {
           if (isArabic) updateDetailsField("includedItemsAr", [...serviceForm.details.includedItemsAr, ""]);
           else updateDetailsField("includedItems", [...serviceForm.details.includedItems, ""]);
-        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
+        }}>{isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â¹Ã™â€ Ã˜ÂµÃ˜Â±" : "+ Add item"}</button>
       </div>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "خطوات تقديم الخدمة" : "How It Works"}</h3>
+      <h3>{isArabic ? "Ã˜Â®Ã˜Â·Ã™Ë†Ã˜Â§Ã˜Âª Ã˜ÂªÃ™â€šÃ˜Â¯Ã™Å Ã™â€¦ Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â¯Ã™â€¦Ã˜Â©" : "How It Works"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "عنوان القسم" : "Section title"}
+        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.processTitleAr : serviceForm.details.processTitle}
             onChange={(event) => isArabic ? updateDetailsField("processTitleAr", event.target.value) : updateDetailsField("processTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "الوصف" : "Description"}
+        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.processDescriptionAr : serviceForm.details.processDescription}
             onChange={(event) => isArabic ? updateDetailsField("processDescriptionAr", event.target.value) : updateDetailsField("processDescription", event.target.value)} />
@@ -887,15 +912,15 @@ export default function AdminDashboardPage() {
       {serviceForm.details.steps.map((step, index) => (
         <div className="admin-nested-editor" key={`step-${index}`}>
           <div className="admin-panel-heading">
-            <strong>{isArabic ? `الخطوة ${index + 1}` : `Step ${index + 1}`}</strong>
+            <strong>{isArabic ? `Ã˜Â§Ã™â€žÃ˜Â®Ã˜Â·Ã™Ë†Ã˜Â© ${index + 1}` : `Step ${index + 1}`}</strong>
             <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("steps", serviceForm.details.steps.filter((_, i) => i !== index))}><X size={16} /></button>
           </div>
           <div className="admin-details-grid">
-            <label>{isArabic ? "العنوان" : "Title"}
+            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€ " : "Title"}
               <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.titleAr : step.title}
                 onChange={(event) => isArabic ? updateStep(index, "titleAr", event.target.value) : updateStep(index, "title", event.target.value)} />
             </label>
-            <label>{isArabic ? "الوصف" : "Description"}
+            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
               <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.descriptionAr : step.description}
                 onChange={(event) => isArabic ? updateStep(index, "descriptionAr", event.target.value) : updateStep(index, "description", event.target.value)} />
             </label>
@@ -903,18 +928,18 @@ export default function AdminDashboardPage() {
         </div>
       ))}
       <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("steps", [...serviceForm.details.steps, { title: "", description: "", titleAr: "", descriptionAr: "" }])}>
-        {isArabic ? "+ إضافة خطوة" : "+ Add step"}
+        {isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â®Ã˜Â·Ã™Ë†Ã˜Â©" : "+ Add step"}
       </button>
     </div>
 
     <div className="admin-editor-section">
-      <h3>{isArabic ? "الأسئلة الشائعة" : "Frequently Asked Questions"}</h3>
+      <h3>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â£Ã˜Â³Ã˜Â¦Ã™â€žÃ˜Â© Ã˜Â§Ã™â€žÃ˜Â´Ã˜Â§Ã˜Â¦Ã˜Â¹Ã˜Â©" : "Frequently Asked Questions"}</h3>
       <div className="admin-details-grid">
-        <label>{isArabic ? "عنوان القسم" : "Section title"}
+        <label>{isArabic ? "Ã˜Â¹Ã™â€ Ã™Ë†Ã˜Â§Ã™â€  Ã˜Â§Ã™â€žÃ™â€šÃ˜Â³Ã™â€¦" : "Section title"}
           <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.faqTitleAr : serviceForm.details.faqTitle}
             onChange={(event) => isArabic ? updateDetailsField("faqTitleAr", event.target.value) : updateDetailsField("faqTitle", event.target.value)} />
         </label>
-        <label>{isArabic ? "الوصف" : "Description"}
+        <label>{isArabic ? "Ã˜Â§Ã™â€žÃ™Ë†Ã˜ÂµÃ™Â" : "Description"}
           <textarea dir={isArabic ? "rtl" : "ltr"}
             value={isArabic ? serviceForm.details.faqDescriptionAr : serviceForm.details.faqDescription}
             onChange={(event) => isArabic ? updateDetailsField("faqDescriptionAr", event.target.value) : updateDetailsField("faqDescription", event.target.value)} />
@@ -923,15 +948,15 @@ export default function AdminDashboardPage() {
       {serviceForm.details.faqs.map((faq, index) => (
         <div className="admin-nested-editor" key={`faq-${index}`}>
           <div className="admin-panel-heading">
-            <strong>{isArabic ? `السؤال ${index + 1}` : `Question ${index + 1}`}</strong>
+            <strong>{isArabic ? `Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž ${index + 1}` : `Question ${index + 1}`}</strong>
             <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("faqs", serviceForm.details.faqs.filter((_, i) => i !== index))}><X size={16} /></button>
           </div>
           <div className="admin-details-grid">
-            <label>{isArabic ? "السؤال" : "Question"}
+            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž" : "Question"}
               <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.questionAr : faq.question}
                 onChange={(event) => isArabic ? updateFaq(index, "questionAr", event.target.value) : updateFaq(index, "question", event.target.value)} />
             </label>
-            <label>{isArabic ? "الإجابة" : "Answer"}
+            <label>{isArabic ? "Ã˜Â§Ã™â€žÃ˜Â¥Ã˜Â¬Ã˜Â§Ã˜Â¨Ã˜Â©" : "Answer"}
               <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.answerAr : faq.answer}
                 onChange={(event) => isArabic ? updateFaq(index, "answerAr", event.target.value) : updateFaq(index, "answer", event.target.value)} />
             </label>
@@ -939,7 +964,7 @@ export default function AdminDashboardPage() {
         </div>
       ))}
       <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("faqs", [...serviceForm.details.faqs, { question: "", answer: "", questionAr: "", answerAr: "" }])}>
-        {isArabic ? "+ إضافة سؤال" : "+ Add FAQ"}
+        {isArabic ? "+ Ã˜Â¥Ã˜Â¶Ã˜Â§Ã™ÂÃ˜Â© Ã˜Â³Ã˜Â¤Ã˜Â§Ã™â€ž" : "+ Add FAQ"}
       </button>
     </div>
     <div className="admin-form-actions">
@@ -953,10 +978,13 @@ export default function AdminDashboardPage() {
                       <article className="admin-service-card" key={service.id}>
                         <div className="admin-service-card-icon"><Package size={22} /></div>
                         <span className={`admin-status status-${service.status.toLowerCase() === "active" ? "confirmed" : "cancelled"}`}>{service.status}</span>
-                        <h3>{service.name}</h3>
-                        <p>{service.description}</p>
+                        <h3>{isArabic ? service.nameAr || service.name : service.name || service.nameAr}</h3>
+                        <p>{isArabic ? service.descriptionAr || service.description : service.description || service.descriptionAr}</p>
                         <div className="admin-service-card-bottom">
                           <button className="admin-secondary-button" onClick={() => openEditService(service)}>{isArabic ? "تعديل" : "Edit"}</button>
+                          <button type="button" className="admin-action admin-action-cancel" onClick={() => void handleDeleteService(service)}>
+                            <X size={14} /> {isArabic ? "حذف" : "Delete"}
+                          </button>
                         </div>
                       </article>
                     ))}
@@ -1079,6 +1107,9 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+
+
 
 
 

@@ -1,0 +1,220 @@
+﻿import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  Activity,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  HeartHandshake,
+  HeartPulse,
+  MapPin,
+  Phone,
+} from "lucide-react";
+
+import { getServices } from "../services/serviceService";
+import type { ServiceResponse } from "../types/service";
+
+const PHONE_NUMBER = "+201000000000";
+
+export default function ServiceDetailsPage() {
+  const { id } = useParams();
+  const { i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+  const BackArrow = isArabic ? ArrowRight : ArrowLeft;
+
+  const [service, setService] = useState<ServiceResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadService() {
+      try {
+        const services = await getServices();
+        const found = services.find(
+          (item) => item.id === id && item.status.toLowerCase() === "active"
+        );
+
+        if (active) {
+          setService(found ?? null);
+          setError(false);
+        }
+      } catch {
+        if (active) setError(true);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadService();
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat(isArabic ? "ar-EG" : "en-EG", {
+      style: "currency",
+      currency: "EGP",
+      maximumFractionDigits: 0,
+    }).format(price);
+
+  const benefits = isArabic
+    ? [
+        "رعاية مخصصة حسب احتياجات المريض",
+        "راحة وأمان داخل المنزل",
+        "مواعيد مرنة تناسب احتياجاتك",
+        "متابعة واهتمام بجودة الخدمة",
+      ]
+    : [
+        "Care tailored to the patient's needs",
+        "Comfort and convenience at home",
+        "Flexible scheduling",
+        "Professional and attentive service",
+      ];
+
+  if (loading) {
+    return (
+      <main className="service-details-page">
+        <p>{isArabic ? "جارٍ تحميل الخدمة..." : "Loading service..."}</p>
+      </main>
+    );
+  }
+
+  if (error || !service) {
+    return (
+      <main className="service-details-page">
+        <h1>{isArabic ? "الخدمة غير متاحة" : "Service unavailable"}</h1>
+        <p>
+          {isArabic
+            ? "تعذر العثور على هذه الخدمة أو تحميلها."
+            : "We couldn't find this service or load its details."}
+        </p>
+        <Link to="/">
+          {isArabic ? "العودة للرئيسية" : "Back to home"}
+        </Link>
+      </main>
+    );
+  }
+
+  const normalizedName = service.name.toLowerCase();
+  const Icon = normalizedName.includes("physio")
+    ? Activity
+    : normalizedName.includes("nursing")
+      ? HeartPulse
+      : HeartHandshake;
+
+  return (
+    <main className="service-details-page">
+      <div className="container">
+        <Link to="/" className="service-details-back">
+          <BackArrow size={18} />
+          {isArabic ? "العودة للخدمات" : "Back to services"}
+        </Link>
+
+        <section className="service-details-hero">
+          <div className="service-details-icon">
+            <Icon size={42} />
+          </div>
+
+          <span className="eyebrow">
+            {isArabic ? "خدمات تمريض" : "TAMREED SERVICES"}
+          </span>
+
+          <h1>{service.name}</h1>
+          <p>{service.description}</p>
+
+          <div className="service-details-price">
+            <span>{isArabic ? "السعر" : "Price"}</span>
+            <strong>{formatPrice(service.price)}</strong>
+          </div>
+
+          <div className="service-details-actions">
+            <Link
+              to={`/booking?serviceId=${encodeURIComponent(service.id)}`}
+              className="button button-primary"
+            >
+              {isArabic ? "احجز الآن" : "Book Now"}
+            </Link>
+
+            <a href={`tel:${PHONE_NUMBER}`} className="button button-outline">
+              <Phone size={18} />
+              {isArabic ? "اتصل بنا" : "Call Now"}
+            </a>
+          </div>
+        </section>
+
+        <section className="service-details-content">
+          <div>
+            <span className="eyebrow">
+              {isArabic ? "لماذا تختارنا؟" : "WHY CHOOSE US"}
+            </span>
+
+            <h2>
+              {isArabic
+                ? "رعاية واهتمام يناسبان احتياجاتك"
+                : "Care designed around your needs"}
+            </h2>
+
+            <ul className="service-benefits">
+              {benefits.map((benefit) => (
+                <li key={benefit}>
+                  <CheckCircle2 size={20} />
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <aside className="service-details-info">
+            <h3>{isArabic ? "معلومات الخدمة" : "Service Information"}</h3>
+
+            <p>
+              <Clock size={19} />
+              {isArabic
+                ? "مواعيد مرنة حسب التوافر"
+                : "Flexible scheduling, subject to availability"}
+            </p>
+
+            <p>
+              <MapPin size={19} />
+              {isArabic
+                ? "حسب مناطق التغطية المتاحة"
+                : "Subject to available coverage areas"}
+            </p>
+
+            <p>
+              <HeartHandshake size={19} />
+              {isArabic ? "خدمة منزلية" : "At-home service"}
+            </p>
+          </aside>
+        </section>
+
+        <section className="service-details-cta">
+          <h2>
+            {isArabic
+              ? "هل أنت مستعد لحجز خدمتك؟"
+              : "Ready to book your service?"}
+          </h2>
+
+          <p>
+            {isArabic
+              ? "ابدأ طلبك الآن وسنتواصل معك لتأكيد التفاصيل."
+              : "Submit your booking request and we'll contact you to confirm the details."}
+          </p>
+
+          <Link
+            to={`/booking?serviceId=${encodeURIComponent(service.id)}`}
+            className="button button-primary"
+          >
+            {isArabic ? "احجز خدمتك" : "Book Your Service"}
+          </Link>
+        </section>
+      </div>
+    </main>
+  );
+}

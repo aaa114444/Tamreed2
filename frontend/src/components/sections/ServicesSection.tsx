@@ -112,7 +112,9 @@ export default function ServicesSection() {
         {!loading && !error && services.length > 0 && (
           <div className="services-grid">
             {services.map((service, index) => {
-              const normalizedName = service.name.toLowerCase();
+              const displayName = isArabic ? service.nameAr || service.name : service.name || service.nameAr;
+              const displayDescription = isArabic ? service.descriptionAr || service.description : service.description || service.descriptionAr;
+              const normalizedName = (service.name || service.nameAr || "").toLowerCase();
 
               const presentation =
                 serviceDefinitions.find((definition) => {
@@ -143,8 +145,8 @@ export default function ServicesSection() {
                 <article className="service-card" key={service.id}>
                   <div className="service-card-image">
                     <img
-                      src={getServiceImage(service.name)}
-                      alt={service.name}
+                      src={getServiceImage(service.name || service.nameAr || "")}
+                      alt={displayName}
                       loading="lazy"
                     />
                     <span className="service-image-overlay" />
@@ -163,8 +165,8 @@ export default function ServicesSection() {
                     </span>
                   </div>
 
-                  <h3>{t(presentation.titleKey)}</h3>
-                  <p>{t(presentation.descriptionKey)}</p>
+                  <h3>{displayName}</h3>
+                  <p>{displayDescription}</p>
 
                   <Link
                     to={`/services/${service.id}`}
@@ -189,3 +191,4 @@ export default function ServicesSection() {
     </section>
   );
 }
+

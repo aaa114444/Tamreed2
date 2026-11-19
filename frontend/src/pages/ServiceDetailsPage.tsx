@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -64,13 +64,13 @@ export default function ServiceDetailsPage() {
 
     const pageTitle = isArabic
       ? service.titleAr || service.nameAr || service.title || service.name
-      : service.title || service.name;
+      : service.title || service.name || service.titleAr || service.nameAr;
 
     document.title = `${pageTitle} | Tamreed`;
 
     const description = isArabic
       ? service.descriptionAr || service.description
-      : service.description;
+      : service.description || service.descriptionAr;
 
     let descriptionTag = document.querySelector(
       'meta[name="description"]'
@@ -127,7 +127,7 @@ export default function ServiceDetailsPage() {
     );
   }
 
-  const normalizedName = service.name.toLowerCase();
+  const normalizedName = (service.name || service.nameAr || "").toLowerCase();
   const isPhysio = normalizedName.includes("physio");
   const isNursing = normalizedName.includes("nursing");
   const Icon = isPhysio ? Activity : isNursing ? HeartPulse : HeartHandshake;
@@ -164,65 +164,65 @@ export default function ServiceDetailsPage() {
   const details = service.details;
   const title = isArabic
     ? service.titleAr || service.nameAr || service.title || service.name
-    : service.title || service.name;
+    : service.title || service.name || service.titleAr || service.nameAr;
 
   const intro = isArabic
     ? service.descriptionAr || service.description
-    : service.description;
+    : service.description || service.descriptionAr;
 
   const articleSections = {
     about: isArabic
       ? details.aboutTitleAr || details.aboutTitle
-      : details.aboutTitle,
+      : details.aboutTitle || details.aboutTitleAr,
     aboutText: isArabic
       ? details.aboutTextAr || details.aboutText
-      : details.aboutText,
+      : details.aboutText || details.aboutTextAr,
     audience: isArabic
       ? details.audienceTitleAr || details.audienceTitle
-      : details.audienceTitle,
+      : details.audienceTitle || details.audienceTitleAr,
     audienceDescription: isArabic
       ? details.audienceDescriptionAr || details.audienceDescription
-      : details.audienceDescription,
+      : details.audienceDescription || details.audienceDescriptionAr,
     audienceItems: isArabic
       ? details.audienceItemsAr?.filter(Boolean) ?? []
-      : details.audienceItems?.filter(Boolean) ?? [],
+      : (details.audienceItems?.filter(Boolean)?.length ? details.audienceItems.filter(Boolean) : details.audienceItemsAr?.filter(Boolean)) ?? [],
     included: isArabic
       ? details.includedTitleAr || details.includedTitle
-      : details.includedTitle,
+      : details.includedTitle || details.includedTitleAr,
     includedDescription: isArabic
       ? details.includedDescriptionAr || details.includedDescription
-      : details.includedDescription,
+      : details.includedDescription || details.includedDescriptionAr,
     includedItems: isArabic
       ? details.includedItemsAr?.filter(Boolean) ?? []
-      : details.includedItems?.filter(Boolean) ?? [],
+      : (details.includedItems?.filter(Boolean)?.length ? details.includedItems.filter(Boolean) : details.includedItemsAr?.filter(Boolean)) ?? [],
     process: isArabic
       ? details.processTitleAr || details.processTitle
-      : details.processTitle,
+      : details.processTitle || details.processTitleAr,
     processDescription: isArabic
       ? details.processDescriptionAr || details.processDescription
-      : details.processDescription,
+      : details.processDescription || details.processDescriptionAr,
     faq: isArabic
       ? details.faqTitleAr || details.faqTitle
-      : details.faqTitle,
+      : details.faqTitle || details.faqTitleAr,
     faqDescription: isArabic
       ? details.faqDescriptionAr || details.faqDescription
-      : details.faqDescription,
+      : details.faqDescription || details.faqDescriptionAr,
   };
 
   const steps = (details.steps ?? [])
     .map((step, index) => ({
       number: String(index + 1).padStart(2, "0"),
-      title: isArabic ? step.titleAr || step.title : step.title,
+      title: isArabic ? step.titleAr || step.title : step.title || step.titleAr,
       description: isArabic
         ? step.descriptionAr || step.description
-        : step.description,
+        : step.description || step.descriptionAr,
     }))
     .filter((step) => step.title || step.description);
 
   const faqs = (details.faqs ?? [])
     .map((faq) => ({
-      question: isArabic ? faq.questionAr || faq.question : faq.question,
-      answer: isArabic ? faq.answerAr || faq.answer : faq.answer,
+      question: isArabic ? faq.questionAr || faq.question : faq.question || faq.questionAr,
+      answer: isArabic ? faq.answerAr || faq.answer : faq.answer || faq.answerAr,
     }))
     .filter((faq) => faq.question || faq.answer);
   return (
@@ -454,8 +454,8 @@ export default function ServiceDetailsPage() {
                   key={item.id}
                 >
                   <span className="service-related-icon"><HeartHandshake size={23} /></span>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
+                  <h3>{isArabic ? item.nameAr || item.name : item.name || item.nameAr}</h3>
+                  <p>{isArabic ? item.descriptionAr || item.description : item.description || item.descriptionAr}</p>
                   <span className="service-related-link">
                     {isArabic ? "اكتشف الخدمة" : "Explore service"}
                     <ArrowUpRight size={17} />

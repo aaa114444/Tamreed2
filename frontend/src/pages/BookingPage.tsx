@@ -203,7 +203,7 @@ export default function BookingPage() {
                 </option>
                 {services.map((service) => (
                   <option key={service.id} value={service.id}>
-                    {service.name}
+                    {isArabic ? service.nameAr || service.name : service.name || service.nameAr}
                   </option>
                 ))}
               </select>
@@ -316,5 +316,6 @@ export default function BookingPage() {
     </section>
   );
 }
+
 
 

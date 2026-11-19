@@ -1,4 +1,4 @@
-import { apiRequest } from "./apiClient";
+﻿import { apiRequest } from "./apiClient";
 import type {
   ServiceResponse,
   ServiceDetailsContent,
@@ -40,4 +40,10 @@ export async function updateService(
       body: JSON.stringify(request),
     }
   );
+}
+
+export async function deleteService(id: string): Promise<void> {
+  await apiRequest<void>(`/api/Services/${id}`, {
+    method: "DELETE",
+  });
 }
