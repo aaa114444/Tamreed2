@@ -34,6 +34,29 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
         ConfigurePoints(builder.Property(service => service.Points));
         ConfigurePoints(builder.Property(service => service.PointsAr));
 
+        var detailsProperty = builder.Property(service => service.Details);
+
+        detailsProperty
+            .HasConversion(
+                details => JsonSerializer.Serialize(details, (JsonSerializerOptions?)null),
+                json => string.IsNullOrWhiteSpace(json)
+                    ? new ServiceDetailsContent()
+                    : JsonSerializer.Deserialize<ServiceDetailsContent>(
+                        json, (JsonSerializerOptions?)null)
+                        ?? new ServiceDetailsContent())
+            .HasColumnType("nvarchar(max)")
+            .IsRequired();
+
+        detailsProperty.Metadata.SetValueComparer(
+            new ValueComparer<ServiceDetailsContent>(
+                (left, right) => JsonSerializer.Serialize(left, (JsonSerializerOptions?)null)
+                    == JsonSerializer.Serialize(right, (JsonSerializerOptions?)null),
+                details => JsonSerializer.Serialize(details, (JsonSerializerOptions?)null)
+                    .GetHashCode(),
+                details => JsonSerializer.Deserialize<ServiceDetailsContent>(
+                    JsonSerializer.Serialize(details, (JsonSerializerOptions?)null),
+                    (JsonSerializerOptions?)null)!));
+
         builder.Property(service => service.Status)
             .HasConversion<string>()
             .HasMaxLength(30)
@@ -63,4 +86,3 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
                 points => points.ToList()));
     }
 }
-

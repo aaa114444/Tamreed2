@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Tamreed2.Application.Common.Interfaces;
 
 namespace Tamreed2.Application.Services.Commands.UpdateService;
@@ -39,10 +39,12 @@ public sealed class UpdateServiceCommandHandler
             request.TitleAr,
             request.NameAr,
             request.DescriptionAr,
-            request.PointsAr);
+            request.PointsAr,
+            request.Details);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return service.Id;
     }
 }
+

@@ -1,11 +1,19 @@
 import { apiRequest } from "./apiClient";
-import type { ServiceResponse } from "../types/service";
+import type {
+  ServiceResponse,
+  ServiceDetailsContent,
+} from "../types/service";
 
 export interface SaveServiceRequest {
   title: string;
   name: string;
   description: string;
   points: string[];
+  titleAr: string;
+  nameAr: string;
+  descriptionAr: string;
+  pointsAr: string[];
+  details: ServiceDetailsContent;
 }
 
 export async function getServices(): Promise<ServiceResponse[]> {

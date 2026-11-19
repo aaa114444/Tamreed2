@@ -15,7 +15,7 @@ import {
   Package,
   Plus,
   RefreshCw,
-  Save,
+
   Search,
   Users,
   X,
@@ -41,6 +41,46 @@ import type { ServiceResponse } from "../types/service";
 
 type DashboardTab = "overview" | "bookings" | "services" | "customers";
 type BookingFilter = "all" | "pending" | "confirmed" | "inprogress" | "completed" | "cancelled";
+function createEmptyServiceForm(): SaveServiceRequest {
+  return {
+    title: "",
+    name: "",
+    description: "",
+    points: [],
+    titleAr: "",
+    nameAr: "",
+    descriptionAr: "",
+    pointsAr: [],
+    details: {
+      aboutTitle: "",
+      aboutText: "",
+      aboutTitleAr: "",
+      aboutTextAr: "",
+      audienceTitle: "",
+      audienceDescription: "",
+      audienceTitleAr: "",
+      audienceDescriptionAr: "",
+      audienceItems: [],
+      audienceItemsAr: [],
+      includedTitle: "",
+      includedDescription: "",
+      includedTitleAr: "",
+      includedDescriptionAr: "",
+      includedItems: [],
+      includedItemsAr: [],
+      processTitle: "",
+      processDescription: "",
+      processTitleAr: "",
+      processDescriptionAr: "",
+      steps: [],
+      faqTitle: "",
+      faqDescription: "",
+      faqTitleAr: "",
+      faqDescriptionAr: "",
+      faqs: [],
+    },
+  };
+}
 
 const translations = {
   en: {
@@ -222,10 +262,9 @@ export default function AdminDashboardPage() {
   const [notice, setNotice] = useState("");
   const [filter, setFilter] = useState<BookingFilter>("all");
   const [search, setSearch] = useState("");
-  const [saving, setSaving] = useState(false);
   const [editingService, setEditingService] = useState<ServiceResponse | null>(null);
   const [showServiceForm, setShowServiceForm] = useState(false);
-  const [serviceForm, setServiceForm] = useState<SaveServiceRequest>({ title: "", name: "", description: "", points: [] });
+  const [serviceForm, setServiceForm] = useState<SaveServiceRequest>(createEmptyServiceForm());
 
   const loadDashboard = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true);
@@ -369,26 +408,99 @@ export default function AdminDashboardPage() {
 
   function openNewService() {
     setEditingService(null);
-    setServiceForm({ title: "", name: "", description: "", points: [] });
+    setServiceForm(createEmptyServiceForm());
     setShowServiceForm(true);
     setNotice("");
     setError("");
   }
 
   function openEditService(service: ServiceResponse) {
+    const emptyForm = createEmptyServiceForm();
+
     setEditingService(service);
-    setServiceForm({ title: service.title, name: service.name, description: service.description, points: [...service.points] });
+    setServiceForm({
+      title: service.title ?? "",
+      name: service.name ?? "",
+      description: service.description ?? "",
+      points: [...(service.points ?? [])],
+      titleAr: service.titleAr ?? "",
+      nameAr: service.nameAr ?? "",
+      descriptionAr: service.descriptionAr ?? "",
+      pointsAr: [...(service.pointsAr ?? [])],
+      details: {
+        ...emptyForm.details,
+        ...(service.details ?? {}),
+        audienceItems: [...(service.details?.audienceItems ?? [])],
+        audienceItemsAr: [...(service.details?.audienceItemsAr ?? [])],
+        includedItems: [...(service.details?.includedItems ?? [])],
+        includedItemsAr: [...(service.details?.includedItemsAr ?? [])],
+        steps: [...(service.details?.steps ?? [])],
+        faqs: [...(service.details?.faqs ?? [])],
+      },
+    });
+
     setShowServiceForm(true);
     setNotice("");
     setError("");
   }
 
+  function updateServiceField<K extends keyof SaveServiceRequest>(
+    field: K,
+    value: SaveServiceRequest[K]
+  ) {
+    setServiceForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateDetailsField<K extends keyof SaveServiceRequest["details"]>(
+    field: K,
+    value: SaveServiceRequest["details"][K]
+  ) {
+    setServiceForm((current) => ({
+      ...current,
+      details: { ...current.details, [field]: value },
+    }));
+  }
+
+  function updateDetailsList(
+    field: "audienceItems" | "audienceItemsAr" | "includedItems" | "includedItemsAr",
+    index: number,
+    value: string
+  ) {
+    updateDetailsField(
+      field,
+      serviceForm.details[field].map((item, i) => i === index ? value : item)
+    );
+  }
+
+  function updateStep(
+    index: number,
+    field: "title" | "description" | "titleAr" | "descriptionAr",
+    value: string
+  ) {
+    updateDetailsField(
+      "steps",
+      serviceForm.details.steps.map((step, i) =>
+        i === index ? { ...step, [field]: value } : step
+      )
+    );
+  }
+
+  function updateFaq(
+    index: number,
+    field: "question" | "answer" | "questionAr" | "answerAr",
+    value: string
+  ) {
+    updateDetailsField(
+      "faqs",
+      serviceForm.details.faqs.map((faq, i) =>
+        i === index ? { ...faq, [field]: value } : faq
+      )
+    );
+  }
   async function handleSaveService(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!serviceForm.title.trim() || !serviceForm.name.trim() || !serviceForm.description.trim()) { setError(t.required); return; }
-
-    setSaving(true);
     setError("");
     setNotice("");
 
@@ -407,7 +519,6 @@ export default function AdminDashboardPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : t.error);
     } finally {
-      setSaving(false);
     }
   }
 
@@ -633,32 +744,210 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {showServiceForm && (
-                  <form className="admin-service-form" onSubmit={(event) => void handleSaveService(event)}>
-                    <div className="admin-panel-heading">
-                      <h2>{editingService ? t.editService : t.addService}</h2>
-                      <button type="button" className="admin-icon-button" onClick={() => setShowServiceForm(false)}><X size={19} /></button>
-                    </div>
-                                        <label>{t.title}<input value={serviceForm.title} onChange={(event) => setServiceForm({ ...serviceForm, title: event.target.value })} required maxLength={200} /></label>
-                    <label>{t.name}<input value={serviceForm.name} onChange={(event) => setServiceForm({ ...serviceForm, name: event.target.value })} required maxLength={150} /></label>
-                    <label>{t.description}<textarea value={serviceForm.description} onChange={(event) => setServiceForm({ ...serviceForm, description: event.target.value })} required maxLength={1000} rows={4} /></label>
-                    <div className="admin-points-field">
-                      <span>{t.points}</span>
-                      {serviceForm.points.map((point, index) => (
-                        <div key={index} className="admin-point-input">
-                          <input value={point} maxLength={200} placeholder={`${t.points} ${index + 1}`} onChange={(event) => setServiceForm({ ...serviceForm, points: serviceForm.points.map((item, i) => i === index ? event.target.value : item) })} />
-                          <button type="button" className="admin-secondary-button" onClick={() => setServiceForm({ ...serviceForm, points: serviceForm.points.filter((_, i) => i !== index) })}>{t.removePoint}</button>
-                        </div>
-                      ))}
-                      <button type="button" className="admin-secondary-button" disabled={serviceForm.points.length >= 20} onClick={() => setServiceForm({ ...serviceForm, points: [...serviceForm.points, ""] })}>+ {t.addPoint}</button>
-                    </div>
-                    <div className="admin-form-actions">
-                      <button type="button" className="admin-secondary-button" onClick={() => setShowServiceForm(false)}>{t.cancelEdit}</button>
-                      <button type="submit" className="admin-primary-button" disabled={saving}><Save size={16} /> {saving ? t.saving : t.save}</button>
-                    </div>
-                  </form>
-                )}
+  <form className="admin-service-form" onSubmit={(event) => void handleSaveService(event)}>
+    <div className="admin-panel-heading">
+      <h2>{editingService ? t.editService : t.addService}</h2>
+      <button type="button" className="admin-icon-button" onClick={() => setShowServiceForm(false)}>
+        <X size={19} />
+      </button>
+    </div>
 
-                {services.length === 0 ? <div className="admin-empty">{t.noServices}</div> : (
+    <h3>{isArabic ? "المعلومات الأساسية" : "Basic Information"}</h3>
+    <div className="admin-details-grid">
+      <label>{isArabic ? "العنوان" : "Title"}
+        <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.titleAr : serviceForm.title}
+          onChange={(event) => isArabic ? updateServiceField("titleAr", event.target.value) : updateServiceField("title", event.target.value)}
+          required={!isArabic} maxLength={200} />
+      </label>
+      <label>{isArabic ? "اسم الخدمة" : "Service name"}
+        <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.nameAr : serviceForm.name}
+          onChange={(event) => isArabic ? updateServiceField("nameAr", event.target.value) : updateServiceField("name", event.target.value)}
+          required={!isArabic} maxLength={150} />
+      </label>
+      <label>{isArabic ? "الوصف" : "Description"}
+        <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.descriptionAr : serviceForm.description}
+          onChange={(event) => isArabic ? updateServiceField("descriptionAr", event.target.value) : updateServiceField("description", event.target.value)}
+          required={!isArabic} maxLength={1000} rows={3} />
+      </label>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "النقاط الرئيسية" : "Highlights"}</h3>
+      <div className="admin-points-field">
+        {(isArabic ? serviceForm.pointsAr : serviceForm.points).map((point, index) => (
+          <div className="admin-dynamic-row" key={`point-${isArabic ? "ar" : "en"}-${index}`}>
+            <input dir={isArabic ? "rtl" : "ltr"} value={point}
+              onChange={(event) => {
+                if (isArabic) updateServiceField("pointsAr", serviceForm.pointsAr.map((item, i) => i === index ? event.target.value : item));
+                else updateServiceField("points", serviceForm.points.map((item, i) => i === index ? event.target.value : item));
+              }} />
+            <button type="button" className="admin-icon-button" onClick={() => {
+              if (isArabic) updateServiceField("pointsAr", serviceForm.pointsAr.filter((_, i) => i !== index));
+              else updateServiceField("points", serviceForm.points.filter((_, i) => i !== index));
+            }}><X size={16} /></button>
+          </div>
+        ))}
+        <button type="button" className="admin-secondary-button" onClick={() => {
+          if (isArabic) updateServiceField("pointsAr", [...serviceForm.pointsAr, ""]);
+          else updateServiceField("points", [...serviceForm.points, ""]);
+        }}>{isArabic ? "+ إضافة نقطة" : "+ Add point"}</button>
+      </div>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "عن الخدمة" : "About This Service"}</h3>
+      <div className="admin-details-grid">
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
+          <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.aboutTitleAr : serviceForm.details.aboutTitle}
+            onChange={(event) => isArabic ? updateDetailsField("aboutTitleAr", event.target.value) : updateDetailsField("aboutTitle", event.target.value)} />
+        </label>
+        <label>{isArabic ? "المحتوى" : "Content"}
+          <textarea dir={isArabic ? "rtl" : "ltr"} rows={4}
+            value={isArabic ? serviceForm.details.aboutTextAr : serviceForm.details.aboutText}
+            onChange={(event) => isArabic ? updateDetailsField("aboutTextAr", event.target.value) : updateDetailsField("aboutText", event.target.value)} />
+        </label>
+      </div>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "لمن هذه الخدمة؟" : "Who Is This For?"}</h3>
+      <div className="admin-details-grid">
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
+          <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.audienceTitleAr : serviceForm.details.audienceTitle}
+            onChange={(event) => isArabic ? updateDetailsField("audienceTitleAr", event.target.value) : updateDetailsField("audienceTitle", event.target.value)} />
+        </label>
+        <label>{isArabic ? "الوصف" : "Description"}
+          <textarea dir={isArabic ? "rtl" : "ltr"}
+            value={isArabic ? serviceForm.details.audienceDescriptionAr : serviceForm.details.audienceDescription}
+            onChange={(event) => isArabic ? updateDetailsField("audienceDescriptionAr", event.target.value) : updateDetailsField("audienceDescription", event.target.value)} />
+        </label>
+      </div>
+      <div className="admin-points-field">
+        {(isArabic ? serviceForm.details.audienceItemsAr : serviceForm.details.audienceItems).map((item, index) => (
+          <div className="admin-dynamic-row" key={`audience-${isArabic ? "ar" : "en"}-${index}`}>
+            <input dir={isArabic ? "rtl" : "ltr"} value={item}
+              onChange={(event) => updateDetailsList(isArabic ? "audienceItemsAr" : "audienceItems", index, event.target.value)} />
+            <button type="button" className="admin-icon-button" onClick={() => {
+              if (isArabic) updateDetailsField("audienceItemsAr", serviceForm.details.audienceItemsAr.filter((_, i) => i !== index));
+              else updateDetailsField("audienceItems", serviceForm.details.audienceItems.filter((_, i) => i !== index));
+            }}><X size={16} /></button>
+          </div>
+        ))}
+        <button type="button" className="admin-secondary-button" onClick={() => {
+          if (isArabic) updateDetailsField("audienceItemsAr", [...serviceForm.details.audienceItemsAr, ""]);
+          else updateDetailsField("audienceItems", [...serviceForm.details.audienceItems, ""]);
+        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
+      </div>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "ماذا تشمل الخدمة؟" : "What's Included"}</h3>
+      <div className="admin-details-grid">
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
+          <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.includedTitleAr : serviceForm.details.includedTitle}
+            onChange={(event) => isArabic ? updateDetailsField("includedTitleAr", event.target.value) : updateDetailsField("includedTitle", event.target.value)} />
+        </label>
+        <label>{isArabic ? "الوصف" : "Description"}
+          <textarea dir={isArabic ? "rtl" : "ltr"}
+            value={isArabic ? serviceForm.details.includedDescriptionAr : serviceForm.details.includedDescription}
+            onChange={(event) => isArabic ? updateDetailsField("includedDescriptionAr", event.target.value) : updateDetailsField("includedDescription", event.target.value)} />
+        </label>
+      </div>
+      <div className="admin-points-field">
+        {(isArabic ? serviceForm.details.includedItemsAr : serviceForm.details.includedItems).map((item, index) => (
+          <div className="admin-dynamic-row" key={`included-${isArabic ? "ar" : "en"}-${index}`}>
+            <input dir={isArabic ? "rtl" : "ltr"} value={item}
+              onChange={(event) => updateDetailsList(isArabic ? "includedItemsAr" : "includedItems", index, event.target.value)} />
+            <button type="button" className="admin-icon-button" onClick={() => {
+              if (isArabic) updateDetailsField("includedItemsAr", serviceForm.details.includedItemsAr.filter((_, i) => i !== index));
+              else updateDetailsField("includedItems", serviceForm.details.includedItems.filter((_, i) => i !== index));
+            }}><X size={16} /></button>
+          </div>
+        ))}
+        <button type="button" className="admin-secondary-button" onClick={() => {
+          if (isArabic) updateDetailsField("includedItemsAr", [...serviceForm.details.includedItemsAr, ""]);
+          else updateDetailsField("includedItems", [...serviceForm.details.includedItems, ""]);
+        }}>{isArabic ? "+ إضافة عنصر" : "+ Add item"}</button>
+      </div>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "خطوات تقديم الخدمة" : "How It Works"}</h3>
+      <div className="admin-details-grid">
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
+          <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.processTitleAr : serviceForm.details.processTitle}
+            onChange={(event) => isArabic ? updateDetailsField("processTitleAr", event.target.value) : updateDetailsField("processTitle", event.target.value)} />
+        </label>
+        <label>{isArabic ? "الوصف" : "Description"}
+          <textarea dir={isArabic ? "rtl" : "ltr"}
+            value={isArabic ? serviceForm.details.processDescriptionAr : serviceForm.details.processDescription}
+            onChange={(event) => isArabic ? updateDetailsField("processDescriptionAr", event.target.value) : updateDetailsField("processDescription", event.target.value)} />
+        </label>
+      </div>
+      {serviceForm.details.steps.map((step, index) => (
+        <div className="admin-nested-editor" key={`step-${index}`}>
+          <div className="admin-panel-heading">
+            <strong>{isArabic ? `الخطوة ${index + 1}` : `Step ${index + 1}`}</strong>
+            <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("steps", serviceForm.details.steps.filter((_, i) => i !== index))}><X size={16} /></button>
+          </div>
+          <div className="admin-details-grid">
+            <label>{isArabic ? "العنوان" : "Title"}
+              <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.titleAr : step.title}
+                onChange={(event) => isArabic ? updateStep(index, "titleAr", event.target.value) : updateStep(index, "title", event.target.value)} />
+            </label>
+            <label>{isArabic ? "الوصف" : "Description"}
+              <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? step.descriptionAr : step.description}
+                onChange={(event) => isArabic ? updateStep(index, "descriptionAr", event.target.value) : updateStep(index, "description", event.target.value)} />
+            </label>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("steps", [...serviceForm.details.steps, { title: "", description: "", titleAr: "", descriptionAr: "" }])}>
+        {isArabic ? "+ إضافة خطوة" : "+ Add step"}
+      </button>
+    </div>
+
+    <div className="admin-editor-section">
+      <h3>{isArabic ? "الأسئلة الشائعة" : "Frequently Asked Questions"}</h3>
+      <div className="admin-details-grid">
+        <label>{isArabic ? "عنوان القسم" : "Section title"}
+          <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? serviceForm.details.faqTitleAr : serviceForm.details.faqTitle}
+            onChange={(event) => isArabic ? updateDetailsField("faqTitleAr", event.target.value) : updateDetailsField("faqTitle", event.target.value)} />
+        </label>
+        <label>{isArabic ? "الوصف" : "Description"}
+          <textarea dir={isArabic ? "rtl" : "ltr"}
+            value={isArabic ? serviceForm.details.faqDescriptionAr : serviceForm.details.faqDescription}
+            onChange={(event) => isArabic ? updateDetailsField("faqDescriptionAr", event.target.value) : updateDetailsField("faqDescription", event.target.value)} />
+        </label>
+      </div>
+      {serviceForm.details.faqs.map((faq, index) => (
+        <div className="admin-nested-editor" key={`faq-${index}`}>
+          <div className="admin-panel-heading">
+            <strong>{isArabic ? `السؤال ${index + 1}` : `Question ${index + 1}`}</strong>
+            <button type="button" className="admin-icon-button" onClick={() => updateDetailsField("faqs", serviceForm.details.faqs.filter((_, i) => i !== index))}><X size={16} /></button>
+          </div>
+          <div className="admin-details-grid">
+            <label>{isArabic ? "السؤال" : "Question"}
+              <input dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.questionAr : faq.question}
+                onChange={(event) => isArabic ? updateFaq(index, "questionAr", event.target.value) : updateFaq(index, "question", event.target.value)} />
+            </label>
+            <label>{isArabic ? "الإجابة" : "Answer"}
+              <textarea dir={isArabic ? "rtl" : "ltr"} value={isArabic ? faq.answerAr : faq.answer}
+                onChange={(event) => isArabic ? updateFaq(index, "answerAr", event.target.value) : updateFaq(index, "answer", event.target.value)} />
+            </label>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="admin-secondary-button" onClick={() => updateDetailsField("faqs", [...serviceForm.details.faqs, { question: "", answer: "", questionAr: "", answerAr: "" }])}>
+        {isArabic ? "+ إضافة سؤال" : "+ Add FAQ"}
+      </button>
+    </div>
+    <div className="admin-form-actions">
+      <button type="button" className="admin-secondary-button" onClick={() => setShowServiceForm(false)}>{t.cancel}</button>
+      <button type="submit" className="admin-primary-button">{t.save}</button>
+    </div>
+  </form>
+)}{services.length === 0 ? <div className="admin-empty">{t.noServices}</div> : (
                   <div className="admin-services-grid">
                     {services.map((service) => (
                       <article className="admin-service-card" key={service.id}>
@@ -790,6 +1079,12 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+
+
+
+
+
 
 
 

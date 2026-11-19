@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tamreed2.Application.Services.Commands.CreateService;
@@ -20,6 +20,51 @@ public class ServicesController : ControllerBase
         _sender = sender;
     }
 
+    private static Tamreed2.Domain.Services.ServiceDetailsContent MapDetails(
+        ServiceDetailsContentRequest request)
+    {
+        return new Tamreed2.Domain.Services.ServiceDetailsContent
+        {
+            AboutTitle = request.AboutTitle,
+            AboutText = request.AboutText,
+            AboutTitleAr = request.AboutTitleAr,
+            AboutTextAr = request.AboutTextAr,
+            AudienceTitle = request.AudienceTitle,
+            AudienceDescription = request.AudienceDescription,
+            AudienceTitleAr = request.AudienceTitleAr,
+            AudienceDescriptionAr = request.AudienceDescriptionAr,
+            AudienceItems = request.AudienceItems.ToList(),
+            AudienceItemsAr = request.AudienceItemsAr.ToList(),
+            IncludedTitle = request.IncludedTitle,
+            IncludedDescription = request.IncludedDescription,
+            IncludedTitleAr = request.IncludedTitleAr,
+            IncludedDescriptionAr = request.IncludedDescriptionAr,
+            IncludedItems = request.IncludedItems.ToList(),
+            IncludedItemsAr = request.IncludedItemsAr.ToList(),
+            ProcessTitle = request.ProcessTitle,
+            ProcessDescription = request.ProcessDescription,
+            ProcessTitleAr = request.ProcessTitleAr,
+            ProcessDescriptionAr = request.ProcessDescriptionAr,
+            Steps = request.Steps.Select(step => new Tamreed2.Domain.Services.ServiceStepContent
+            {
+                Title = step.Title,
+                Description = step.Description,
+                TitleAr = step.TitleAr,
+                DescriptionAr = step.DescriptionAr
+            }).ToList(),
+            FaqTitle = request.FaqTitle,
+            FaqDescription = request.FaqDescription,
+            FaqTitleAr = request.FaqTitleAr,
+            FaqDescriptionAr = request.FaqDescriptionAr,
+            Faqs = request.Faqs.Select(faq => new Tamreed2.Domain.Services.ServiceFaqContent
+            {
+                Question = faq.Question,
+                Answer = faq.Answer,
+                QuestionAr = faq.QuestionAr,
+                AnswerAr = faq.AnswerAr
+            }).ToList()
+        };
+    }
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -38,7 +83,8 @@ public class ServicesController : ControllerBase
             request.TitleAr,
             request.NameAr,
             request.DescriptionAr,
-            request.PointsAr);
+            request.PointsAr,
+            MapDetails(request.Details));
 
         var serviceId = await _sender.Send(command, cancellationToken);
 
@@ -104,7 +150,8 @@ public class ServicesController : ControllerBase
             request.TitleAr,
             request.NameAr,
             request.DescriptionAr,
-            request.PointsAr);
+            request.PointsAr,
+            MapDetails(request.Details));
 
         var serviceId = await _sender.Send(command, cancellationToken);
 
@@ -115,3 +162,5 @@ public class ServicesController : ControllerBase
         });
     }
 }
+
+

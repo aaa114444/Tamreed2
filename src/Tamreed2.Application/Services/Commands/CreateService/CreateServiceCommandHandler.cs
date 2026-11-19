@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Domain.Services;
 
@@ -30,7 +30,8 @@ public sealed class CreateServiceCommandHandler
             request.TitleAr,
             request.NameAr,
             request.DescriptionAr,
-            request.PointsAr);
+            request.PointsAr,
+            request.Details);
 
         await _serviceRepository.AddAsync(service, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -38,3 +39,4 @@ public sealed class CreateServiceCommandHandler
         return service.Id;
     }
 }
+

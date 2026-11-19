@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Contracts.Services;
 
@@ -20,18 +20,6 @@ public sealed class GetAllServicesQueryHandler
     {
         var services = await _serviceRepository.GetAllAsync(cancellationToken);
 
-        return services.Select(service => new ServiceResponse(
-            service.Id,
-            service.Title,
-            service.Name,
-            service.Description,
-            service.Points,
-            service.TitleAr,
-            service.NameAr,
-            service.DescriptionAr,
-            service.PointsAr,
-            service.Status.ToString(),
-            service.CreatedAtUtc
-        )).ToList();
+        return services.Select(ServiceResponseMapper.Map).ToList();
     }
 }

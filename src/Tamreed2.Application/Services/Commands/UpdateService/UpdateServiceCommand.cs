@@ -1,4 +1,5 @@
-﻿using MediatR;
+using MediatR;
+using Tamreed2.Domain.Services;
 
 namespace Tamreed2.Application.Services.Commands.UpdateService;
 
@@ -11,5 +12,7 @@ public sealed record UpdateServiceCommand(
     string TitleAr,
     string NameAr,
     string DescriptionAr,
-    IReadOnlyList<string> PointsAr
+    IReadOnlyList<string> PointsAr,
+    ServiceDetailsContent? Details = null
 ) : IRequest<Guid>;
+

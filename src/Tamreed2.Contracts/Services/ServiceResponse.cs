@@ -1,4 +1,4 @@
-﻿namespace Tamreed2.Contracts.Services;
+namespace Tamreed2.Contracts.Services;
 
 public sealed record ServiceResponse(
     Guid Id,
@@ -10,6 +10,7 @@ public sealed record ServiceResponse(
     string NameAr,
     string DescriptionAr,
     IReadOnlyList<string> PointsAr,
+    ServiceDetailsContentResponse Details,
     string Status,
     DateTimeOffset CreatedAtUtc
 );

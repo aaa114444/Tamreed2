@@ -1,4 +1,4 @@
-﻿namespace Tamreed2.Contracts.Services;
+namespace Tamreed2.Contracts.Services;
 
 public sealed record CreateServiceRequest(
     string Title,
@@ -8,5 +8,6 @@ public sealed record CreateServiceRequest(
     string TitleAr,
     string NameAr,
     string DescriptionAr,
-    IReadOnlyList<string> PointsAr
+    IReadOnlyList<string> PointsAr,
+    ServiceDetailsContentRequest Details
 );

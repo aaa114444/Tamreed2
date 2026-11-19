@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Tamreed2.Application.Common.Interfaces;
 using Tamreed2.Contracts.Services;
 
@@ -22,20 +22,6 @@ public sealed class GetServiceByIdQueryHandler
             request.ServiceId,
             cancellationToken);
 
-        if (service is null)
-            return null;
-
-        return new ServiceResponse(
-            service.Id,
-            service.Title,
-            service.Name,
-            service.Description,
-            service.Points,
-            service.TitleAr,
-            service.NameAr,
-            service.DescriptionAr,
-            service.PointsAr,
-            service.Status.ToString(),
-            service.CreatedAtUtc);
+        return service is null ? null : ServiceResponseMapper.Map(service);
     }
 }

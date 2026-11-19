@@ -1,4 +1,4 @@
-﻿using Tamreed2.Domain.Common.Exceptions;
+using Tamreed2.Domain.Common.Exceptions;
 using Tamreed2.Domain.Common.Models;
 
 namespace Tamreed2.Domain.Services;
@@ -14,6 +14,7 @@ public sealed class Service : AggregateRoot
     public string NameAr { get; private set; } = null!;
     public string DescriptionAr { get; private set; } = null!;
     public List<string> PointsAr { get; private set; } = new();
+    public ServiceDetailsContent Details { get; private set; } = new();
 
     public ServiceStatus Status { get; private set; }
     public DateTimeOffset CreatedAtUtc { get; private set; }
@@ -28,11 +29,12 @@ public sealed class Service : AggregateRoot
         string titleAr,
         string nameAr,
         string descriptionAr,
-        IEnumerable<string>? pointsAr)
+        IEnumerable<string>? pointsAr,
+        ServiceDetailsContent? details = null)
     {
         UpdateDetails(
             title, name, description, points,
-            titleAr, nameAr, descriptionAr, pointsAr);
+            titleAr, nameAr, descriptionAr, pointsAr, details);
 
         Status = ServiceStatus.Active;
         CreatedAtUtc = DateTimeOffset.UtcNow;
@@ -46,11 +48,12 @@ public sealed class Service : AggregateRoot
         string titleAr,
         string nameAr,
         string descriptionAr,
-        IEnumerable<string>? pointsAr)
+        IEnumerable<string>? pointsAr,
+        ServiceDetailsContent? details = null)
     {
         return new Service(
             title, name, description, points,
-            titleAr, nameAr, descriptionAr, pointsAr);
+            titleAr, nameAr, descriptionAr, pointsAr, details);
     }
 
     public void UpdateDetails(
@@ -61,7 +64,8 @@ public sealed class Service : AggregateRoot
         string titleAr,
         string nameAr,
         string descriptionAr,
-        IEnumerable<string>? pointsAr)
+        IEnumerable<string>? pointsAr,
+        ServiceDetailsContent? details = null)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new DomainException("Service title is required.");
@@ -90,6 +94,7 @@ public sealed class Service : AggregateRoot
         NameAr = nameAr.Trim();
         DescriptionAr = descriptionAr.Trim();
         PointsAr = NormalizePoints(pointsAr);
+        Details = details ?? new ServiceDetailsContent();
     }
 
     private static List<string> NormalizePoints(IEnumerable<string>? points)
@@ -118,3 +123,4 @@ public sealed class Service : AggregateRoot
         Status = ServiceStatus.Active;
     }
 }
+
