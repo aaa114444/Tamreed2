@@ -13,6 +13,7 @@ import {
   LogOut,
   MapPin,
   Package,
+  PhoneCall,
   Plus,
   RefreshCw,
 
@@ -39,8 +40,16 @@ import type { BookingResponse } from "../types/booking";
 import { getCustomers, setCustomerActiveStatus } from "../services/customerService";
 import type { CustomerResponse } from "../types/customer";
 import type { ServiceResponse } from "../types/service";
+import {
+  getCallbackRequests,
+  updateCallbackRequestStatus,
+} from "../services/callbackRequestService";
+import type {
+  CallbackRequestResponse,
+  CallbackRequestStatus,
+} from "../types/callbackRequest";
 
-type DashboardTab = "overview" | "bookings" | "services" | "customers";
+type DashboardTab = "overview" | "bookings" | "services" | "customers" | "callbackRequests";
 type BookingFilter = "all" | "pending" | "confirmed" | "inprogress" | "completed" | "cancelled";
 function createEmptyServiceForm(): SaveServiceRequest {
   return {
@@ -91,6 +100,17 @@ const translations = {
     bookings: "Bookings",
     services: "Services",
     customers: "Customers",
+    callbackRequests: "Callback Requests",
+    manageCallbackRequests: "Manage callback requests",
+    noCallbackRequests: "No callback requests found.",
+    callbackStatusUpdated: "Callback request status updated.",
+    callbackName: "Name",
+    callbackPhone: "Mobile number",
+    callbackServices: "Services needed",
+    callbackDate: "Received",
+    callbackMessage: "Message",
+    markContacted: "Mark as contacted",
+    markCompleted: "Mark as completed",
     manageCustomers: "Customer management",
     customerSearch: "Search by name or email...",
     noCustomers: "No customers found.",
@@ -170,6 +190,17 @@ const translations = {
     bookings: "الحجوزات",
     services: "الخدمات",
     customers: "العملاء",
+    callbackRequests: "\u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644",
+    manageCallbackRequests: "\u0625\u062f\u0627\u0631\u0629 \u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644",
+    noCallbackRequests: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u062a\u0635\u0627\u0644.",
+    callbackStatusUpdated: "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u062d\u0627\u0644\u0629 \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.",
+    callbackName: "\u0627\u0644\u0627\u0633\u0645",
+    callbackPhone: "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641",
+    callbackServices: "\u0627\u0644\u062e\u062f\u0645\u0627\u062a \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629",
+    callbackDate: "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0637\u0644\u0628",
+    callbackMessage: "\u0627\u0644\u0631\u0633\u0627\u0644\u0629",
+    markContacted: "\u062a\u0645 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
+    markCompleted: "\u062a\u0645 \u0627\u0644\u0625\u0646\u0647\u0627\u0621",
     manageCustomers: "إدارة العملاء",
     customerSearch: "ابحث بالاسم أو البريد الإلكتروني...",
     noCustomers: "لا يوجد عملاء.",
@@ -255,6 +286,9 @@ export default function AdminDashboardPage() {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
   const [services, setServices] = useState<ServiceResponse[]>([]);
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
+  const [callbackRequests, setCallbackRequests] = useState<CallbackRequestResponse[]>([]);
+  const [callbackLoading, setCallbackLoading] = useState(false);
+  const [callbackUpdatingId, setCallbackUpdatingId] = useState<string | null>(null);
   const [customerSearch, setCustomerSearch] = useState("");
   const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -293,6 +327,52 @@ export default function AdminDashboardPage() {
     void loadDashboard();
   }, [loadDashboard]);
 
+  const loadCallbackRequests = useCallback(async () => {
+    setCallbackLoading(true);
+
+    try {
+      const data = await getCallbackRequests();
+      setCallbackRequests(data);
+      setError("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.error);
+    } finally {
+      setCallbackLoading(false);
+    }
+  }, [t.error]);
+
+  useEffect(() => {
+    if (activeTab === "callbackRequests") {
+      void loadCallbackRequests();
+    }
+  }, [activeTab, loadCallbackRequests]);
+
+  async function handleCallbackStatus(
+    requestId: string,
+    status: CallbackRequestStatus
+  ) {
+    setCallbackUpdatingId(requestId);
+    setError("");
+    setNotice("");
+
+    try {
+      await updateCallbackRequestStatus(requestId, status);
+
+      setCallbackRequests((current) =>
+        current.map((request) =>
+          request.id === requestId
+            ? { ...request, status, updatedAtUtc: new Date().toISOString() }
+            : request
+        )
+      );
+
+      setNotice(t.callbackStatusUpdated);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.error);
+    } finally {
+      setCallbackUpdatingId(null);
+    }
+  }
   const counts = useMemo(() => ({
     total: bookings.length,
     pending: bookings.filter((b) => b.status.toLowerCase() === "pending").length,
@@ -614,6 +694,10 @@ export default function AdminDashboardPage() {
             <Users size={18} /> {t.customers}
             <span className="admin-nav-count">{customers.length}</span>
           </button>
+          <button className={activeTab === "callbackRequests" ? "active" : ""} onClick={() => setActiveTab("callbackRequests")}>
+            <PhoneCall size={18} /> {t.callbackRequests}
+            <span className="admin-nav-count">{callbackRequests.filter((request) => request.status === "New").length}</span>
+          </button>
         </nav>
 
         <div className="admin-sidebar-bottom">
@@ -626,7 +710,7 @@ export default function AdminDashboardPage() {
         <header className="admin-topbar">
           <div>
             <span className="admin-eyebrow">CARE PLUS / ADMIN</span>
-            <h1>{activeTab === "overview" ? t.overview : activeTab === "bookings" ? t.manageBookings : activeTab === "services" ? t.serviceManagement : t.manageCustomers}</h1>
+            <h1>{activeTab === "overview" ? t.overview : activeTab === "bookings" ? t.manageBookings : activeTab === "services" ? t.serviceManagement : activeTab === "customers" ? t.manageCustomers : t.manageCallbackRequests}</h1>
             <p>{t.subtitle}</p>
           </div>
 
@@ -1095,6 +1179,124 @@ export default function AdminDashboardPage() {
                             <span className="admin-customer-id">{customer.id}</span>
                           </div>
                         </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
+            {activeTab === "callbackRequests" && (
+              <section className="admin-content">
+                <div className="admin-section-heading">
+                  <div>
+                    <span className="admin-eyebrow">CUSTOMER RELATIONS</span>
+                    <h2>{t.manageCallbackRequests}</h2>
+                    <p>{callbackRequests.length} {t.callbackRequests.toLowerCase()}</p>
+                  </div>
+
+                  <button
+                    className="admin-secondary-button"
+                    onClick={() => void loadCallbackRequests()}
+                    disabled={callbackLoading}
+                  >
+                    <RefreshCw
+                      size={16}
+                      className={callbackLoading ? "refresh-spinning" : ""}
+                    />
+                    {t.refresh}
+                  </button>
+                </div>
+
+                {callbackLoading ? (
+                  <div className="admin-loading">
+                    <RefreshCw className="refresh-spinning" />
+                    {t.loading}
+                  </div>
+                ) : callbackRequests.length === 0 ? (
+                  <div className="admin-empty">{t.noCallbackRequests}</div>
+                ) : (
+                  <div className="admin-services-grid">
+                    {callbackRequests.map((request) => (
+                      <article
+                        className="admin-service-card callback-admin-card"
+                        key={request.id}
+                      >
+                        <div className="admin-service-card-icon">
+                          <PhoneCall size={22} />
+                        </div>
+
+                        <span className={`admin-status callback-status-${request.status.toLowerCase()}`}>
+                          {request.status === "New"
+                            ? isArabic ? "\u062c\u062f\u064a\u062f" : "New"
+                            : request.status === "Contacted"
+                              ? isArabic ? "\u062a\u0645 \u0627\u0644\u062a\u0648\u0627\u0635\u0644" : "Contacted"
+                              : isArabic ? "\u0645\u0643\u062a\u0645\u0644" : "Completed"}
+                        </span>
+
+                        <h3>{request.name}</h3>
+
+                        <p>
+                          <strong>{t.callbackPhone}: </strong>
+                          <a href={`tel:${request.mobileNumber}`}>
+                            {request.mobileNumber}
+                          </a>
+                        </p>
+
+                        <div className="callback-admin-details">
+                          <div>
+                            <span className="admin-info-label">
+                              {t.callbackServices}
+                            </span>
+                            <p>{request.servicesNeeded.join(", ")}</p>
+                          </div>
+
+                          <div>
+                            <span className="admin-info-label">
+                              {t.callbackDate}
+                            </span>
+                            <p>
+                              {new Date(request.createdAtUtc).toLocaleString(
+                                isArabic ? "ar-EG" : "en-GB"
+                              )}
+                            </p>
+                          </div>
+
+                          {request.message && (
+                            <div>
+                              <span className="admin-info-label">
+                                {t.callbackMessage}
+                              </span>
+                              <p>{request.message}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {request.status !== "Completed" && (
+                          <div className="callback-admin-actions">
+                            {request.status === "New" && (
+                              <button
+                                className="admin-secondary-button"
+                                onClick={() =>
+                                  void handleCallbackStatus(request.id, "Contacted")
+                                }
+                                disabled={callbackUpdatingId === request.id}
+                              >
+                                {t.markContacted}
+                              </button>
+                            )}
+
+                            <button
+                              className="admin-primary-button"
+                              onClick={() =>
+                                void handleCallbackStatus(request.id, "Completed")
+                              }
+                              disabled={callbackUpdatingId === request.id}
+                            >
+                              <Check size={15} />
+                              {t.markCompleted}
+                            </button>
+                          </div>
+                        )}
                       </article>
                     ))}
                   </div>

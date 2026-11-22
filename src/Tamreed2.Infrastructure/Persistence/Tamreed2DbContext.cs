@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Tamreed2.Domain.Bookings;
+using Tamreed2.Domain.CallbackRequests;
 using Tamreed2.Domain.Services;
 using Tamreed2.Domain.Users;
 
@@ -12,6 +13,8 @@ public sealed class Tamreed2DbContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<CallbackRequest> CallbackRequests => Set<CallbackRequest>();
 
     public DbSet<Booking> Bookings => Set<Booking>();
 

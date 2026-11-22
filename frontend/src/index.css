@@ -6726,3 +6726,365 @@ a:focus-visible {
   }
 }
 
+
+/* TAMREED ADMIN INDEPENDENT SCROLLING FIX */
+
+/* Desktop and tablet */
+@media (min-width: 651px) {
+  .admin-shell {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .admin-sidebar {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    flex-shrink: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+
+  .admin-main {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Mobile: restore normal page scrolling */
+@media (max-width: 650px) {
+  .admin-shell {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .admin-sidebar {
+    height: auto;
+    min-height: auto;
+    position: relative;
+    overflow: visible;
+  }
+
+  .admin-main {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+}
+/* CALLBACK REQUEST FORM */
+.callback-form-section {
+  margin-top: 55px;
+  padding: 48px;
+  background: #f7f9f6;
+  border: 1px solid #e3ebe5;
+}
+
+.callback-form-heading {
+  max-width: 650px;
+  margin-bottom: 30px;
+}
+
+.callback-form-heading h3 {
+  margin: 16px 0 10px;
+  color: var(--care-primary-dark);
+  font-size: clamp(25px, 3vw, 34px);
+}
+
+.callback-form-heading > p {
+  color: var(--care-muted);
+  line-height: 1.8;
+}
+
+.callback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 850px;
+}
+
+.callback-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.callback-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.callback-field > span,
+.callback-services legend {
+  color: var(--care-primary-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.callback-field input,
+.callback-field textarea {
+  width: 100%;
+  min-height: 49px;
+  padding: 13px 15px;
+  border: 1px solid #dce7df;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: var(--care-primary-dark);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.callback-field textarea {
+  min-height: 115px;
+  resize: vertical;
+}
+
+.callback-field input:focus,
+.callback-field textarea:focus {
+  border-color: var(--care-primary);
+  box-shadow: 0 0 0 3px rgba(22, 131, 110, .10);
+}
+
+.callback-field input::placeholder,
+.callback-field textarea::placeholder {
+  color: #9aa9a1;
+}
+
+.callback-services {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.callback-services legend {
+  margin-bottom: 13px;
+}
+
+.callback-service-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.callback-service-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 15px;
+  border: 1px solid #dce7df;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--care-primary-dark);
+  cursor: pointer;
+  font-size: 13px;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.callback-service-option:has(input:checked) {
+  border-color: var(--care-primary);
+  background: #edf5f0;
+}
+
+.callback-service-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--care-primary);
+  cursor: pointer;
+}
+
+.callback-hint {
+  color: var(--care-muted);
+  font-size: 13px;
+}
+
+.callback-disclaimer {
+  margin: 0;
+  color: var(--care-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.callback-submit {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  border: 0;
+  cursor: pointer;
+}
+
+.callback-submit:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.callback-message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 13px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.callback-error {
+  color: #a83232;
+  background: #fff0f0;
+  border: 1px solid #f2d0d0;
+}
+
+.callback-success {
+  color: #176b4e;
+  background: #edf8f1;
+  border: 1px solid #cce8d5;
+}
+
+.callback-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+[dir="rtl"] .callback-form,
+[dir="rtl"] .callback-form-heading {
+  text-align: right;
+}
+
+[dir="rtl"] .callback-field input,
+[dir="rtl"] .callback-field textarea {
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .callback-form-section {
+    margin-top: 35px;
+    padding: 30px 22px;
+  }
+
+  .callback-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .callback-service-options {
+    flex-direction: column;
+  }
+
+  .callback-service-option {
+    width: 100%;
+  }
+
+  .callback-submit {
+    width: 100%;
+  }
+}
+
+/* Callback Requests Admin */
+.callback-admin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.callback-admin-card > .admin-status {
+  position: absolute;
+  top: 23px;
+  inset-inline-end: 20px;
+}
+
+.callback-admin-card h3 {
+  margin: 0;
+}
+
+.callback-admin-card > p {
+  min-height: auto;
+  overflow-wrap: anywhere;
+}
+
+.callback-admin-card > p a {
+  color: var(--admin-green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.callback-admin-card > p a:hover {
+  text-decoration: underline;
+}
+
+.callback-admin-details {
+  display: grid;
+  gap: 13px;
+  margin-top: 5px;
+  padding: 15px;
+  border: 1px solid #edf0e9;
+  border-radius: 10px;
+  background: #fafbf8;
+}
+
+.callback-admin-details > div {
+  min-width: 0;
+}
+
+.callback-admin-details p {
+  margin: 5px 0 0;
+  color: var(--admin-text);
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.callback-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 5px;
+}
+
+.callback-status-new {
+  color: #94620b;
+  background: #fff5d9;
+}
+
+.callback-status-contacted {
+  color: #2563a6;
+  background: #eaf3ff;
+}
+
+.callback-status-completed {
+  color: #24734b;
+  background: #e8f6ed;
+}
+
+.callback-admin-actions button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+@media (max-width: 480px) {
+  .callback-admin-actions {
+    flex-direction: column;
+  }
+
+  .callback-admin-actions button {
+    width: 100%;
+  }
+}

@@ -1,4 +1,6 @@
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Tamreed2.Infrastructure.Persistence;
@@ -91,6 +93,23 @@ builder.Services
 // Authorization
 builder.Services.AddAuthorization();
 
+// Public callback requests: maximum 5 submissions per minute per IP.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("CallbackRequests", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
+
 // CORS
 builder.Services.AddCors(options =>
 {
@@ -174,6 +193,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseCors("AllowAll");
+app.UseRateLimiter();
 
 // Authentication must run before authorization
 app.UseAuthentication();
