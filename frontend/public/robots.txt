@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /login
@@ -6,4 +6,4 @@ Disallow: /register
 Disallow: /my-bookings
 Disallow: /booking
 
-# Add your production sitemap URL after deployment.
+Sitemap: https://tamreed2-bu6l.vercel.app/sitemap.xml

@@ -18,7 +18,7 @@ import {
 import { getServices } from "../services/serviceService";
 import type { ServiceResponse } from "../types/service";
 
-const PHONE_NUMBER = "+201000000000";
+const PHONE_NUMBER = "+201050058580";
 
 export default function ServiceDetailsPage() {
   const { id } = useParams();
@@ -66,35 +66,103 @@ export default function ServiceDetailsPage() {
       ? service.titleAr || service.nameAr || service.title || service.name
       : service.title || service.name || service.titleAr || service.nameAr;
 
-    document.title = `${pageTitle} | Tamreed`;
-
     const description = isArabic
       ? service.descriptionAr || service.description
       : service.description || service.descriptionAr;
 
-    let descriptionTag = document.querySelector(
-      'meta[name="description"]'
-    ) as HTMLMetaElement | null;
+    const metaDescription = (description || "Professional home healthcare services from Tamreed.")
+      .trim()
+      .slice(0, 155);
 
-    if (!descriptionTag) {
-      descriptionTag = document.createElement("meta");
-      descriptionTag.name = "description";
-      document.head.appendChild(descriptionTag);
-    }
+    const pageUrl = `${window.location.origin}/services/${encodeURIComponent(service.id)}`;
+    const homepageUrl = `${window.location.origin}/`;
 
-    descriptionTag.content = description.slice(0, 155);
+    const setMeta = (
+      attribute: "name" | "property",
+      key: string,
+      value: string
+    ) => {
+      let tag = document.querySelector(
+        `meta[${attribute}="${key}"]`
+      ) as HTMLMetaElement | null;
 
-    let robotsTag = document.querySelector(
-      'meta[name="robots"]'
-    ) as HTMLMetaElement | null;
+      if (!tag) {
+        tag = document.createElement("meta");
+        tag.setAttribute(attribute, key);
+        document.head.appendChild(tag);
+      }
 
-    if (!robotsTag) {
-      robotsTag = document.createElement("meta");
-      robotsTag.name = "robots";
-      document.head.appendChild(robotsTag);
-    }
+      tag.content = value;
+    };
 
-    robotsTag.content = "index, follow";
+    const setCanonical = (url: string) => {
+      let tag = document.querySelector(
+        'link[rel="canonical"]'
+      ) as HTMLLinkElement | null;
+
+      if (!tag) {
+        tag = document.createElement("link");
+        tag.rel = "canonical";
+        document.head.appendChild(tag);
+      }
+
+      tag.href = url;
+    };
+
+    const fullTitle = `${pageTitle} | Tamreed`;
+    const imageUrl = `${window.location.origin}/images/tamreed-hero-family.png`;
+
+    document.title = fullTitle;
+
+    setMeta("name", "description", metaDescription);
+    setMeta("name", "robots", "index, follow");
+
+    setMeta("property", "og:type", "website");
+    setMeta("property", "og:site_name", "Tamreed");
+    setMeta("property", "og:title", fullTitle);
+    setMeta("property", "og:description", metaDescription);
+    setMeta("property", "og:url", pageUrl);
+    setMeta("property", "og:image", imageUrl);
+
+    setMeta("name", "twitter:card", "summary_large_image");
+    setMeta("name", "twitter:title", fullTitle);
+    setMeta("name", "twitter:description", metaDescription);
+    setMeta("name", "twitter:image", imageUrl);
+
+    setCanonical(pageUrl);
+
+    return () => {
+      document.title = "Tamreed | Professional Home Healthcare";
+
+      setMeta(
+        "name",
+        "description",
+        "Tamreed brings compassionate, professional home healthcare services directly to your doorstep. Discover home nursing, physiotherapy, and personalized care."
+      );
+      setMeta("name", "robots", "index, follow");
+
+      setMeta("property", "og:type", "website");
+      setMeta("property", "og:site_name", "Tamreed");
+      setMeta("property", "og:title", "Tamreed | Professional Home Healthcare");
+      setMeta(
+        "property",
+        "og:description",
+        "Compassionate, professional home healthcare services delivered to your doorstep."
+      );
+      setMeta("property", "og:url", homepageUrl);
+      setMeta("property", "og:image", imageUrl);
+
+      setMeta("name", "twitter:card", "summary_large_image");
+      setMeta("name", "twitter:title", "Tamreed | Professional Home Healthcare");
+      setMeta(
+        "name",
+        "twitter:description",
+        "Compassionate, professional home healthcare services delivered to your doorstep."
+      );
+      setMeta("name", "twitter:image", imageUrl);
+
+      setCanonical(homepageUrl);
+    };
   }, [service, isArabic]);
 
   if (loading) {
@@ -132,35 +200,6 @@ export default function ServiceDetailsPage() {
   const isNursing = normalizedName.includes("nursing");
   const Icon = isPhysio ? Activity : isNursing ? HeartPulse : HeartHandshake;
 
-  if (loading) {
-    return (
-      <main className="service-article-page">
-        <div className="container service-loading">
-          <div className="service-loading-mark"><HeartPulse size={30} /></div>
-          <p>{isArabic ? "جارٍ تحميل تفاصيل الخدمة..." : "Preparing your service guide..."}</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (error || !service) {
-    return (
-      <main className="service-article-page">
-        <div className="container service-error">
-          <HeartPulse size={42} />
-          <h1>{isArabic ? "الخدمة غير متاحة" : "Service unavailable"}</h1>
-          <p>
-            {isArabic
-              ? "تعذر العثور على هذه الخدمة أو تحميل تفاصيلها. يرجى المحاولة مرة أخرى."
-              : "We couldn't find this service or load its details. Please try again."}
-          </p>
-          <Link to="/" className="service-primary-button">
-            {isArabic ? "العودة إلى الرئيسية" : "Return to homepage"}
-          </Link>
-        </div>
-      </main>
-    );
-  }
   const details = service.details;
   const title = isArabic
     ? service.titleAr || service.nameAr || service.title || service.name
@@ -169,6 +208,10 @@ export default function ServiceDetailsPage() {
   const intro = isArabic
     ? service.descriptionAr || service.description
     : service.description || service.descriptionAr;
+
+  const serviceHighlights = isArabic
+    ? service.pointsAr?.length ? service.pointsAr : service.points
+    : service.points?.length ? service.points : service.pointsAr;
 
   const articleSections = {
     about: isArabic
@@ -244,6 +287,17 @@ export default function ServiceDetailsPage() {
             </span>
             <h1>{title}</h1>
             <p>{intro}</p>
+
+            {serviceHighlights && serviceHighlights.length > 0 && (
+              <ul className="service-highlights">
+                {serviceHighlights.map((point, index) => (
+                  <li key={`${index}-${point}`}>
+                    <CheckCircle2 size={17} />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="service-hero-actions">
               <Link
                 to={`/booking?serviceId=${encodeURIComponent(service.id)}`}
@@ -469,6 +523,7 @@ export default function ServiceDetailsPage() {
     </main>
   );
 }
+
 
 
 

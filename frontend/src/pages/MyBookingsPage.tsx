@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -20,7 +20,7 @@ import type { ServiceResponse } from "../types/service";
 export default function MyBookingsPage() {
   const { t, i18n } = useTranslation();
 
-  const isArabic = i18n.language === "ar";
+  const isArabic = i18n.language.startsWith("ar");
   const BackArrow = isArabic ? ArrowRight : ArrowLeft;
 
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
@@ -37,13 +37,23 @@ export default function MyBookingsPage() {
     }
 
     try {
-      const [bookingResponse, serviceResponse] = await Promise.all([
+      const [bookingResult, serviceResult] = await Promise.allSettled([
         getMyBookings(),
         getServices(),
       ]);
 
-      setBookings(bookingResponse);
-      setServices(serviceResponse);
+      if (bookingResult.status === "rejected") {
+        throw bookingResult.reason;
+      }
+
+      setBookings(bookingResult.value);
+
+      setServices(
+        serviceResult.status === "fulfilled"
+          ? serviceResult.value
+          : []
+      );
+
       setError("");
     } catch (err) {
       setError(
@@ -57,7 +67,6 @@ export default function MyBookingsPage() {
 
   useEffect(() => {
     void loadBookings();
-
   }, [loadBookings]);
 
   function getServiceName(serviceId: string): string {
@@ -93,9 +102,7 @@ export default function MyBookingsPage() {
 
     const label = labels[normalized];
 
-    return label
-      ? isArabic ? label.ar : label.en
-      : status;
+    return label ? (isArabic ? label.ar : label.en) : status;
   }
 
   function getStatusClass(status: string): string {
@@ -237,10 +244,7 @@ export default function MyBookingsPage() {
         )}
 
         {!loading && (
-          <Link
-            to="/#services"
-            className="bookings-explore-link"
-          >
+          <Link to="/#services" className="bookings-explore-link">
             {t("myBookings.viewServices")}
             <BackArrow size={16} />
           </Link>
@@ -249,4 +253,3 @@ export default function MyBookingsPage() {
     </section>
   );
 }
-

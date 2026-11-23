@@ -7088,3 +7088,252 @@ a:focus-visible {
     width: 100%;
   }
 }
+/* Coverage Areas Section */
+.coverage-section {
+  padding: 72px 0;
+  background: #f7f9f8;
+}
+
+.coverage-content {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 38px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 108, 106, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(0, 50, 50, 0.05);
+}
+
+.coverage-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  color: #006c6a;
+  background: #e8f3f1;
+  border-radius: 18px;
+}
+
+.coverage-content .eyebrow {
+  margin-bottom: 12px;
+}
+
+.coverage-content h2 {
+  margin: 0 0 12px;
+  color: #173b3a;
+}
+
+.coverage-content p {
+  margin: 0 0 22px;
+  color: #647574;
+  line-height: 1.8;
+}
+
+.coverage-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  color: #ffffff;
+  background: #006c6a;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.coverage-button:hover {
+  background: #005653;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .coverage-section {
+    padding: 48px 0;
+  }
+
+  .coverage-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 26px 22px;
+  }
+
+  .coverage-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+.coverage-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.coverage-areas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 26px;
+}
+
+.coverage-area {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  color: #006c6a;
+  background: #e8f3f1;
+  border: 1px solid rgba(0, 108, 106, 0.12);
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.coverage-area svg {
+  flex-shrink: 0;
+}
+
+
+/* Service detail highlights */
+.service-highlights {
+  display: grid;
+  gap: 11px;
+  margin: 25px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.service-highlights li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #e1f0e9;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.service-highlights li svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #a6dfc8;
+}
+
+[dir="rtl"] .service-highlights li {
+  flex-direction: row;
+}
+
+@media (max-width: 600px) {
+  .service-highlights {
+    gap: 9px;
+    margin: 20px 0 24px;
+  }
+
+  .service-highlights li {
+    font-size: 13px;
+  }
+}
+
+/* Promotional banner */
+.promotion-section {
+  padding: 28px 0;
+  background: #fff;
+}
+
+.promotion-banner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 30px 36px;
+  border: 1px solid #dcece5;
+  border-radius: 16px;
+  background: linear-gradient(115deg, #edf7f1 0%, #f8fbf9 100%);
+}
+
+.promotion-icon {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #16836e;
+  background: #dcefe5;
+}
+
+.promotion-content {
+  flex: 1;
+}
+
+.promotion-eyebrow {
+  color: #16836e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.promotion-content h2 {
+  margin: 6px 0;
+  color: #173c46;
+  font-size: clamp(19px, 2.2vw, 25px);
+  line-height: 1.4;
+}
+
+.promotion-content p {
+  margin: 0;
+  color: #637a75;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.promotion-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 13px 19px;
+  border-radius: 9px;
+  background: #16836e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.promotion-link:hover {
+  background: #116b5a;
+  transform: translateY(-2px);
+}
+
+[dir="rtl"] .promotion-banner {
+  text-align: right;
+}
+
+@media (max-width: 650px) {
+  .promotion-section {
+    padding: 20px 0;
+  }
+
+  .promotion-banner {
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 23px 20px;
+  }
+
+  .promotion-content {
+    flex-basis: calc(100% - 70px);
+  }
+
+  .promotion-link {
+    width: 100%;
+  }
+}
+

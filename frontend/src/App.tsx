@@ -11,10 +11,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 
 import HeroSection from "./components/sections/HeroSection";
+import PromotionSection from "./components/sections/PromotionSection";
 import ServicesSection from "./components/sections/ServicesSection";
 import AboutSection from "./components/sections/AboutSection";
 import ProcessSection from "./components/sections/ProcessSection";
 import WhySection from "./components/sections/WhySection";
+import CoverageSection from "./components/sections/CoverageSection";
 import TestimonialsSection from "./components/sections/TestimonialsSection";
 import FaqSection from "./components/sections/FaqSection";
 import CtaSection from "./components/sections/CtaSection";
@@ -33,10 +35,12 @@ function HomePage() {
       <Header />
       <main>
         <HeroSection />
+        <PromotionSection />
         <ServicesSection />
         <AboutSection />
         <ProcessSection />
         <WhySection />
+        <CoverageSection />
         <TestimonialsSection />
         <FaqSection />
         <CtaSection />
@@ -61,7 +65,6 @@ function App() {
     <>
       <SeoManager />
       <>
-      <SeoManager />
       <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/services/:id" element={<ServiceDetailsPage />} />
