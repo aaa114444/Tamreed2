@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import TopStrip from "./components/layout/TopStrip";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import FloatingContactButtons from "./components/layout/FloatingContactButtons";
 import SeoManager from "./components/SeoManager";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -27,6 +28,7 @@ import BookingPage from "./pages/BookingPage";
 import MyBookingsPage from "./pages/MyBookingsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AboutPage from "./pages/AboutPage";
 
 function HomePage() {
   return (
@@ -47,6 +49,7 @@ function HomePage() {
         <ContactSection />
       </main>
       <Footer />
+      <FloatingContactButtons />
     </div>
   );
 }
@@ -67,7 +70,8 @@ function App() {
       <>
       <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/services/:id" element={<ServiceDetailsPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/services/:id" element={<><ServiceDetailsPage /><FloatingContactButtons /></>} />
       <Route path="/login" element={<AuthPage mode="login" />} />
       <Route path="/register" element={<AuthPage mode="register" />} />
 
@@ -88,6 +92,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

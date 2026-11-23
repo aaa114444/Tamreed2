@@ -59,7 +59,7 @@ export default function AboutSection() {
             ))}
           </div>
 
-          <a href="#contact" className="button button-dark">
+          <a href="/about" className="button button-dark">
             {t("about.button")}
             <Arrow size={17} />
           </a>
@@ -68,4 +68,5 @@ export default function AboutSection() {
     </section>
   );
 }
+
 

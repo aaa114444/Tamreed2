@@ -1,4 +1,4 @@
-﻿import i18n from "i18next";
+import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 const resources = {
@@ -51,7 +51,24 @@ const resources = {
         learn: "Learn more",
         all: "Discover all services",
       },
-      about: {
+                  aboutPage: {
+        eyebrow: "OUR STORY",
+        title: "Care that puts people first.",
+        intro: "Care Plus is built around a simple idea: healthcare should feel personal, accessible, and close to home.",
+        storyTitle: "Who We Are",
+        story: "This is a draft introduction to Care Plus. Our story, founding details, team information, and milestones will be updated with verified company information before publication.",
+        missionTitle: "Our Mission",
+        mission: "To make home healthcare more accessible through compassionate, personalized support.",
+        visionTitle: "Our Vision",
+        vision: "To be a trusted choice for families seeking thoughtful healthcare at home.",
+        valuesTitle: "Our Values",
+        valueOne: "Compassion and respect",
+        valueTwo: "Personalized attention",
+        valueThree: "Quality and trust",
+        valueFour: "Comfort and dignity",
+        cta: "Explore our services",
+        draftNotice: "Draft company introduction - details pending confirmation."
+      },      about: {
         eyebrow: "A DIFFERENT KIND OF CARE",
         title: "Because feeling better starts with feeling at home.",
         description: "At Care Plus, we believe quality healthcare should feel personal. We bring compassionate healthcare services closer to you, making it easier to receive the care you need in a familiar and comfortable environment.",
@@ -214,7 +231,24 @@ const resources = {
         learn: "اعرف المزيد",
         all: "اكتشف جميع الخدمات",
       },
-      about: {
+                  aboutPage: {
+        eyebrow: "\u0642\u0635\u062a\u0646\u0627",
+        title: "\u0631\u0639\u0627\u064a\u0629\u0020\u062a\u0636\u0639\u0020\u0627\u0644\u0625\u0646\u0633\u0627\u0646\u0020\u0623\u0648\u0644\u0627\u064b\u002e",
+        intro: "\u062a\u0642\u0648\u0645\u0020\u0641\u0643\u0631\u0629\u0020\u0643\u064a\u0631\u0020\u0628\u0644\u0633\u0020\u0639\u0644\u0649\u0020\u0645\u0628\u062f\u0623\u0020\u0628\u0633\u064a\u0637\u003a\u0020\u064a\u062c\u0628\u0020\u0623\u0646\u0020\u062a\u0643\u0648\u0646\u0020\u0627\u0644\u0631\u0639\u0627\u064a\u0629\u0020\u0627\u0644\u0635\u062d\u064a\u0629\u0020\u0634\u062e\u0635\u064a\u0629\u0020\u0648\u0645\u062a\u0627\u062d\u0629\u0020\u0648\u0642\u0631\u064a\u0628\u0629\u0020\u0645\u0646\u0020\u0645\u0646\u0632\u0644\u0643\u002e",
+        storyTitle: "\u0645\u0646\u0020\u0646\u062d\u0646",
+        story: "\u0647\u0630\u0647\u0020\u0645\u0642\u062f\u0645\u0629\u0020\u0623\u0648\u0644\u064a\u0629\u0020\u0639\u0646\u0020\u0643\u064a\u0631\u0020\u0628\u0644\u0633\u002e\u0020\u0633\u062a\u062a\u0645\u0020\u0625\u0636\u0627\u0641\u0629\u0020\u0642\u0635\u0629\u0020\u0627\u0644\u062a\u0623\u0633\u064a\u0633\u0020\u0648\u0645\u0639\u0644\u0648\u0645\u0627\u062a\u0020\u0627\u0644\u0641\u0631\u064a\u0642\u0020\u0648\u0623\u0647\u0645\u0020\u0627\u0644\u0645\u062d\u0637\u0627\u062a\u0020\u0628\u0639\u062f\u0020\u062a\u0623\u0643\u064a\u062f\u0020\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062a\u0020\u0627\u0644\u0631\u0633\u0645\u064a\u0629\u0020\u0644\u0644\u0634\u0631\u0643\u0629\u002e",
+        missionTitle: "\u0631\u0633\u0627\u0644\u062a\u0646\u0627",
+        mission: "\u062c\u0639\u0644\u0020\u0627\u0644\u0631\u0639\u0627\u064a\u0629\u0020\u0627\u0644\u0635\u062d\u064a\u0629\u0020\u0627\u0644\u0645\u0646\u0632\u0644\u064a\u0629\u0020\u0623\u0643\u062b\u0631\u0020\u0633\u0647\u0648\u0644\u0629\u0020\u0645\u0646\u0020\u062e\u0644\u0627\u0644\u0020\u062f\u0639\u0645\u0020\u0634\u062e\u0635\u064a\u0020\u0642\u0627\u0626\u0645\u0020\u0639\u0644\u0649\u0020\u0627\u0644\u0627\u0647\u062a\u0645\u0627\u0645\u0020\u0648\u0627\u0644\u0631\u062d\u0645\u0629\u002e",
+        visionTitle: "\u0631\u0624\u064a\u062a\u0646\u0627",
+        vision: "\u0623\u0646\u0020\u0646\u0643\u0648\u0646\u0020\u062e\u064a\u0627\u0631\u0627\u064b\u0020\u0645\u0648\u062b\u0648\u0642\u0627\u064b\u0020\u0644\u0644\u0639\u0627\u0626\u0644\u0627\u062a\u0020\u0627\u0644\u062a\u064a\u0020\u062a\u0628\u062d\u062b\u0020\u0639\u0646\u0020\u0631\u0639\u0627\u064a\u0629\u0020\u0635\u062d\u064a\u0629\u0020\u0645\u062a\u0645\u064a\u0632\u0629\u0020\u0641\u064a\u0020\u0627\u0644\u0645\u0646\u0632\u0644\u002e",
+        valuesTitle: "\u0642\u064a\u0645\u0646\u0627",
+        valueOne: "\u0627\u0644\u0631\u062d\u0645\u0629\u0020\u0648\u0627\u0644\u0627\u062d\u062a\u0631\u0627\u0645",
+        valueTwo: "\u0627\u0644\u0627\u0647\u062a\u0645\u0627\u0645\u0020\u0627\u0644\u0634\u062e\u0635\u064a",
+        valueThree: "\u0627\u0644\u062c\u0648\u062f\u0629\u0020\u0648\u0627\u0644\u062b\u0642\u0629",
+        valueFour: "\u0627\u0644\u0631\u0627\u062d\u0629\u0020\u0648\u0627\u0644\u0643\u0631\u0627\u0645\u0629",
+        cta: "\u0627\u0633\u062a\u0643\u0634\u0641\u0020\u062e\u062f\u0645\u0627\u062a\u0646\u0627",
+        draftNotice: "\u0645\u0642\u062f\u0645\u0629\u0020\u0623\u0648\u0644\u064a\u0629\u0020\u0639\u0646\u0020\u0627\u0644\u0634\u0631\u0643\u0629\u0020\u2014\u0020\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062a\u0020\u0627\u0644\u0646\u0647\u0627\u0626\u064a\u0629\u0020\u0642\u064a\u062f\u0020\u0627\u0644\u062a\u0623\u0643\u064a\u062f\u002e"
+      },      about: {
         eyebrow: "رعاية مختلفة",
         title: "لأن التعافي يبدأ بالشعور بالراحة في منزلك.",
         description: "في كير بلس، نؤمن أن الرعاية الصحية الجيدة تبدأ بالاهتمام الحقيقي. نقرّب إليك الخدمات الصحية لتتمكن من الحصول على الرعاية التي تحتاجها في بيئة مألوفة ومريحة.",

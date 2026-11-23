@@ -7337,3 +7337,77 @@ a:focus-visible {
   }
 }
 
+
+/* Floating WhatsApp and Call actions */
+.floating-contact-actions {
+  position: fixed;
+  z-index: 1200;
+  inset-inline-end: 22px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.floating-contact-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 145px;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(20, 40, 45, 0.2);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.floating-contact-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(20, 40, 45, 0.25);
+}
+
+.floating-contact-button:focus-visible {
+  outline: 3px solid #173c46;
+  outline-offset: 4px;
+}
+
+.floating-whatsapp {
+  background: #25d366;
+}
+
+.floating-call {
+  background: #173c46;
+}
+
+@media (max-width: 600px) {
+  .floating-contact-actions {
+    inset-inline-end: 14px;
+    bottom: 16px;
+    gap: 10px;
+  }
+
+  .floating-contact-button {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    min-height: 52px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .floating-contact-button span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-contact-button {
+    transition: none;
+  }
+}

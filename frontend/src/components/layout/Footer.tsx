@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer-editorial-main">
           <div className="footer-editorial-brand">
-            <a href="#home" className="brand brand-footer">
+            <Link to="/#home" className="brand brand-footer">
               <span className="brand-logo">
                 <img src="/care-plus-logo.png" alt="Care Plus" />
               </span>
@@ -20,31 +20,31 @@ export default function Footer() {
                 <strong>{t("brand")}</strong>
                 <small>{t("brandTagline")}</small>
               </span>
-            </a>
+            </Link>
 
             <p>{t("footer.description")}</p>
 
-            <a href="#contact" className="footer-contact-link">
+            <Link to="/#contact" className="footer-contact-link">
               {isArabic ? "تواصل مع فريقنا" : "Get in touch"}
               <Arrow size={16} />
-            </a>
+            </Link>
           </div>
 
           <div className="footer-editorial-column">
             <h4>{t("footer.links")}</h4>
-            <a href="#home">{t("nav.home")}</a>
-            <a href="#services">{t("nav.services")}</a>
-            <a href="#about">{t("nav.about")}</a>
-            <a href="#process">{t("process.title")}</a>
-            <a href="#contact">{t("nav.contact")}</a>
+            <Link to="/#home">{t("nav.home")}</Link>
+            <Link to="/#services">{t("nav.services")}</Link>
+            <Link to="/about">{t("nav.about")}</Link>
+            <Link to="/#process">{t("process.title")}</Link>
+            <Link to="/#contact">{t("nav.contact")}</Link>
           </div>
 
           <div className="footer-editorial-column">
             <h4>{isArabic ? "خدماتنا" : "Our services"}</h4>
-            <a href="#services">{t("services.home.title")}</a>
-            <a href="#services">{t("services.physio.title")}</a>
-            <a href="#services">{t("services.medical.title")}</a>
-            <a href="#services">{t("services.all")}</a>
+            <Link to="/#services">{t("services.home.title")}</Link>
+            <Link to="/#services">{t("services.physio.title")}</Link>
+            <Link to="/#services">{t("services.medical.title")}</Link>
+            <Link to="/#services">{t("services.all")}</Link>
           </div>
 
           <div className="footer-editorial-note">
@@ -64,12 +64,14 @@ export default function Footer() {
           <span>
             © {new Date().getFullYear()} Care Plus. {t("footer.rights")}
           </span>
-          <a href="#home">
+          <Link to="/#home">
             {isArabic ? "العودة إلى الأعلى ↑" : "Back to top ↑"}
-          </a>
+          </Link>
         </div>
       </div>
     </footer>
   );
 }
+
+
 

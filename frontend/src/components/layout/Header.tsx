@@ -58,7 +58,7 @@ export default function Header() {
         <nav className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
           <a href="/#home" onClick={closeMenu}>{t("nav.home")}</a>
           <a href="/#services" onClick={closeMenu}>{t("nav.services")}</a>
-          <a href="/#about" onClick={closeMenu}>{t("nav.about")}</a>
+          <Link to="/about" onClick={closeMenu}>{t("nav.about")}</Link>
           <a href="/#contact" onClick={closeMenu}>{t("nav.contact")}</a>
 
           {isAuthenticated ? (
@@ -161,3 +161,4 @@ export default function Header() {
     </header>
   );
 }
+
