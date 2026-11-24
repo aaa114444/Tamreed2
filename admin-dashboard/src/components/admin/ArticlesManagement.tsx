@@ -421,7 +421,7 @@ export default function ArticlesManagement() {
               onClick={() => setLanguage("ar")}
               className={`rounded-lg px-4 py-2 text-sm font-semibold ${language === "ar" ? "bg-teal-700 text-white" : "bg-slate-100 text-slate-600"}`}
             >
-              ???????
+              {"\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}
             </button>
           </div>
 
