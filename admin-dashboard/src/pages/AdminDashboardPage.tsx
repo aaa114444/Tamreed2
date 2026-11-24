@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
+  BookOpen,
   Check,
   CheckCircle2,
   Clock3,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
+import ArticlesManagement from "../components/admin/ArticlesManagement";
 import {
   getAllBookings,
   updateBookingStatus,
@@ -49,7 +51,7 @@ import type {
   CallbackRequestStatus,
 } from "../types/callbackRequest";
 
-type DashboardTab = "overview" | "bookings" | "services" | "customers" | "callbackRequests";
+type DashboardTab = "overview" | "bookings" | "services" | "customers" | "callbackRequests" | "articles";
 type BookingFilter = "all" | "pending" | "confirmed" | "inprogress" | "completed" | "cancelled";
 function createEmptyServiceForm(): SaveServiceRequest {
   return {
@@ -101,6 +103,8 @@ const translations = {
     services: "Services",
     customers: "Customers",
     callbackRequests: "Callback Requests",
+    articles: "Articles",
+    manageArticles: "Manage articles",
     manageCallbackRequests: "Manage callback requests",
     noCallbackRequests: "No callback requests found.",
     callbackStatusUpdated: "Callback request status updated.",
@@ -191,6 +195,8 @@ const translations = {
     services: "الخدمات",
     customers: "العملاء",
     callbackRequests: "\u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644",
+    articles: "\u0627\u0644\u0645\u0642\u0627\u0644\u0627\u062a",
+    manageArticles: "\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0642\u0627\u0644\u0627\u062a",
     manageCallbackRequests: "\u0625\u062f\u0627\u0631\u0629 \u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644",
     noCallbackRequests: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0637\u0644\u0628\u0627\u062a \u0645\u0639\u0627\u0648\u062f\u0629 \u0627\u062a\u0635\u0627\u0644.",
     callbackStatusUpdated: "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u062d\u0627\u0644\u0629 \u0627\u0644\u0637\u0644\u0628 \u0628\u0646\u062c\u0627\u062d.",
@@ -698,6 +704,9 @@ export default function AdminDashboardPage() {
             <PhoneCall size={18} /> {t.callbackRequests}
             <span className="admin-nav-count">{callbackRequests.filter((request) => request.status === "New").length}</span>
           </button>
+          <button className={activeTab === "articles" ? "active" : ""} onClick={() => setActiveTab("articles")}>
+            <BookOpen size={18} /> {t.articles}
+          </button>
         </nav>
 
         <div className="admin-sidebar-bottom">
@@ -710,7 +719,7 @@ export default function AdminDashboardPage() {
         <header className="admin-topbar">
           <div>
             <span className="admin-eyebrow">CARE PLUS / ADMIN</span>
-            <h1>{activeTab === "overview" ? t.overview : activeTab === "bookings" ? t.manageBookings : activeTab === "services" ? t.serviceManagement : activeTab === "customers" ? t.manageCustomers : t.manageCallbackRequests}</h1>
+            <h1>{activeTab === "overview" ? t.overview : activeTab === "bookings" ? t.manageBookings : activeTab === "services" ? t.serviceManagement : activeTab === "customers" ? t.manageCustomers : activeTab === "callbackRequests" ? t.manageCallbackRequests : t.manageArticles}</h1>
             <p>{t.subtitle}</p>
           </div>
 
@@ -1185,6 +1194,8 @@ export default function AdminDashboardPage() {
                 )}
               </section>
             )}
+            {activeTab === "articles" && <ArticlesManagement />}
+
             {activeTab === "callbackRequests" && (
               <section className="admin-content">
                 <div className="admin-section-heading">
