@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddDbContext<Tamreed2DbContext>(options =>
             options.UseSqlServer(connectionString));
 
+        services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<ICallbackRequestRepository, CallbackRequestRepository>();
         services.AddScoped<IServiceRepository, ServiceRepository>();
